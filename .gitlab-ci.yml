@@ -35,8 +35,6 @@ services:
 
 before_script:
   # https://gitlab.com/gitlab-org/gitlab-runner/-/issues/27384
-  - sleep 5 
-  - docker info
 
  
 build-job:
@@ -78,4 +76,4 @@ deploy:
   - gcloud --quiet --project $PROJECT_ID app deploy app.yaml
 
   only:
-    - master
+    - testi
