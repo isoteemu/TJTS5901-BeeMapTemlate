@@ -1,7 +1,7 @@
 runtime: python38
 
 env_variables:
-GOOGLE_APPLICATION_CREDENTIALS: appcredentials.json
+  GOOGLE_APPLICATION_CREDENTIALS: appcredentials.json
 
 handlers:
 - url: /.*
