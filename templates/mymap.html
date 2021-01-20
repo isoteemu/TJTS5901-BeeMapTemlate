@@ -49,24 +49,23 @@
 
       var request = new XMLHttpRequest();
       request.open('DELETE', '/delete', true);
-      request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+      request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
       request.send(data);
       alert('Marker was saved to database!')
     }
 
     function savePopup() {
-      let lans = allMarkers.map(y => {
-        return y.getLatLng()
-      })
-      console.log(lans)
-      // Ajax query to save the values:
-      var data = lans  
 
+      
+      var data = document.getElementById("edit").value;
+
+      //HTTP request to server
       var request = new XMLHttpRequest();
       request.open('POST', '/save', true);
       request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
       request.send(data);
       alert('Marker was saved to database!')
+     
     }
 
     //Create GeoJSON layer for user generated data
@@ -83,7 +82,7 @@
       //lat lng where clicked to string
       var placement = e.latlng.toString()
       //Set popup content
-      markerpopup.setContent('<list contentEditable="true">Here we have a beehive!<br />Aaaand here lies some info about the place</list> <button onclick="deletePopup()">Delete popup</button> <button onclick="savePopup()">Save to database</button>');
+      markerpopup.setContent('<form><label style="font-weight: bold;">Beehive location: </label><input id="edit" value="Type here"/></form><button onclick="savePopup()">Save to database</button>');
       //Bind marker popup
       marker.bindPopup(markerpopup);
       //Add marker to geojson layer
@@ -91,6 +90,11 @@
 
       allMarkers.push(marker)
     });
+
+
+//</p><br /><p>Aaaand here lies some info about the place</p><br /><button onclick="deletePopup()">Delete popup</button><button onclick="savePopup()">Save to database</button>
+
+
   </script>
 </body>
 
