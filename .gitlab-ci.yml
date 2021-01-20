@@ -79,5 +79,3 @@ deploy:
   - gcloud --quiet --project $PROJECT_ID app deploy app.yaml
   - rm /tmp/$CI_PIPELINE_ID.json
   
-  only:
-    - master
