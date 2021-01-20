@@ -42,21 +42,12 @@
     // show a marker on the map
     L.marker({ lon: 25.72088, lat: 62.24147 }).bindPopup('Jyväskylä').addTo(map);
 
+    //Array of all the markers that we create
     var allMarkers = [];
 
-    function deletePopup() {
-      map.removeLayer(drawnItems)
-
-      var request = new XMLHttpRequest();
-      request.open('DELETE', '/delete', true);
-      request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-      request.send(data);
-      alert('Marker was saved to database!')
-    }
-
+    // Function saves beehive's location to database and to local map
     function savePopup() {
-
-      
+      //Data that we want to send to server and save as a beehive location
       var data = document.getElementById("edit").value;
 
       //HTTP request to server
@@ -64,8 +55,13 @@
       request.open('POST', '/save', true);
       request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
       request.send(data);
-      alert('Marker was saved to database!')
-     
+      alert(data + ' was saved to database!')
+      saveValue()
+    }
+
+    function saveValue() {
+      document.getElementById("loc").innerHTML = document.getElementById("edit").value
+  
     }
 
     //Create GeoJSON layer for user generated data
@@ -82,7 +78,7 @@
       //lat lng where clicked to string
       var placement = e.latlng.toString()
       //Set popup content
-      markerpopup.setContent('<form><label style="font-weight: bold;">Beehive location: </label><input id="edit" value="Type here"/></form><button onclick="savePopup()">Save to database</button>');
+      markerpopup.setContent('<form><label style="font-weight: bold;">Beehive location: </label><label id="loc">Unknown</label><br /><label style="font-weight: bold;">Set a new location: </label><input id="edit" onvaluechange="saveValue()" value="Type here"/></form><button onclick="savePopup()">Save</button>');
       //Bind marker popup
       marker.bindPopup(markerpopup);
       //Add marker to geojson layer
@@ -91,11 +87,17 @@
       allMarkers.push(marker)
     });
 
+    // Functin to delete a beehive in the map
+    /* function deletePopup() {
+      map.removeLayer(drawnItems)
 
-//</p><br /><p>Aaaand here lies some info about the place</p><br /><button onclick="deletePopup()">Delete popup</button><button onclick="savePopup()">Save to database</button>
-
+      var request = new XMLHttpRequest();
+      request.open('DELETE', '/delete', true);
+      request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+      request.send(data);
+      alert('Marker was saved to database!')
+    } */
 
   </script>
 </body>
-
 </html>
