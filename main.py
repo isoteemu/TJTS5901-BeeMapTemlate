@@ -22,8 +22,6 @@ def save_to_db():
     task['bonus'] = 'something'
     
     datastore_client.put(task)
-    print (data)
-    return (data)
 
 @app.route('/delete', methods=['DELETE'])
 def delete_from_db():
@@ -34,7 +32,7 @@ def load_db():
     query = datastore_client.query(kind='HiveLocation')
     query.order = ['location']
     data = list(query.fetch())
-    return data
+    print(data)
 
 if __name__ == '__main__':
     host = os.getenv("HOST", "127.0.0.1")
