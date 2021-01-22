@@ -74,9 +74,8 @@ deploy:
   image: google/cloud-sdk:alpine
   script:
   - echo $SERVICE_ACCOUNT > /tmp/$CI_PIPELINE_ID.json
+  - echo $GOOGLE_APPLICATION_CREDENTIALS > appcredentials.json
   - gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
   - gcloud --quiet --project $PROJECT_ID app deploy app.yaml
   - rm /tmp/$CI_PIPELINE_ID.json
   
-  only:
-    - master
