@@ -80,7 +80,12 @@
       //lat lng where clicked to string
       var placement = e.latlng.toString()
       //Set popup content
-      markerpopup.setContent('<form><label style="font-weight: bold;">Beehive location: </label><label id="loc">Unknown</label><br /><label style="font-weight: bold;">Set a new location: </label><input id="edit" name="edit" onvaluechange="saveValue()" value="Type here"/></form><button onclick="savePopup()">Save</button>');
+      markerpopup.setContent('<form>\
+      <label style="font-weight: bold;">Beehive location: </label>\
+      <label id="loc">Unknown</label><br />\
+      <label style="font-weight: bold;">Set a new location: </label>\
+      <input id="edit" name="edit" onvaluechange="saveValue()" value="Type here"/></form>\
+      <button onclick="savePopup()">Save</button>');
       //Bind marker popup
       marker.bindPopup(markerpopup);
       //Add marker to geojson layer
