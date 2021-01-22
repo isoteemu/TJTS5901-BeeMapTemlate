@@ -14,7 +14,7 @@ def home():
     locations = []
     for latlng in datastore_client.query(kind='HiveLocation').fetch():
         locations.append({
-            "lat": latlng['LaTLng'].latitude,
+            "lat": latlng['LatLng'].latitude,
             "lon": latlng['LatLng'].longitude
         })
 
