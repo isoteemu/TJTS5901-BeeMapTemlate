@@ -6,7 +6,7 @@ import uuid
 
 app = Flask(__name__)
 
-datastore_client = datastore.Client('continousdegrader')
+datastore_client = datastore.Client('agile-team-299406')
 
 @app.route('/')
 def home():
@@ -14,8 +14,8 @@ def home():
     locations = []
     for latlng in datastore_client.query(kind='HiveLocation').fetch():
         locations.append({
-            "lat": latlng['location'].latitude,
-            "lon": latlng['location'].longitude
+            "lat": latlng['LatLng'].latitude,
+            "lon": latlng['LatLng'].longitude
         })
 
     return render_template('mymap.html', hive_locations=locations)
