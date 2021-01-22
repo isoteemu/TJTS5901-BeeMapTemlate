@@ -6,7 +6,7 @@ import uuid
 
 app = Flask(__name__)
 
-datastore_client = datastore.Client('continousdegrader')
+datastore_client = datastore.Client('agile-team-299406')
 
 @app.route('/')
 def home():
