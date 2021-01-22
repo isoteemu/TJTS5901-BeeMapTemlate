@@ -32,6 +32,9 @@
 
 ## Tutorials and guides
 
+Interactive python tutorial:
+https://www.learnpython.org/
+
 Step-by-step guide of creating Flask application:
 https://flask.palletsprojects.com/en/1.1.x/tutorial/
 
