@@ -40,8 +40,10 @@
     L.control.scale().addTo(map);
 
     // show a marker on the map
-    L.marker({ lon: 25.72088, lat: 62.24147 }).bindPopup('Jyväskylä').addTo(map);
-
+    {% for item in hive_locations %}
+      L.marker({{item | tojson}}).bindPopup('spam').addTo(map);
+    {% endfor %}
+    
     //Array of all the markers that we create
     var allMarkers = [];
 
@@ -78,7 +80,7 @@
       //lat lng where clicked to string
       var placement = e.latlng.toString()
       //Set popup content
-      markerpopup.setContent('<form><label style="font-weight: bold;">Beehive location: </label><label id="loc">Unknown</label><br /><label style="font-weight: bold;">Set a new location: </label><input id="edit" onvaluechange="saveValue()" value="Type here"/></form><button onclick="savePopup()">Save</button>');
+      markerpopup.setContent('<form><label style="font-weight: bold;">Beehive location: </label><label id="loc">Unknown</label><br /><label style="font-weight: bold;">Set a new location: </label><input id="edit" name="edit" onvaluechange="saveValue()" value="Type here"/></form><button onclick="savePopup()">Save</button>');
       //Bind marker popup
       marker.bindPopup(markerpopup);
       //Add marker to geojson layer
