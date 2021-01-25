@@ -64,9 +64,10 @@ dast:
     - mkdir /zap/wrk/
     - /zap/zap-baseline.py -J gl-dast-report.json -t $website || true
     - cp /zap/wrk/gl-dast-report.json .
-  artifact:
-    paths:
-      - gl-dast-report.json
+  artifacts:
+    paths: [gl-dast-report.json]
+
+
 
 
 deploy:
