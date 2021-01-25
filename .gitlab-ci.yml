@@ -1,5 +1,9 @@
 image: docker:19.03.10
 
+# Static Application Security Tests by Gitlab CI
+include:
+  - template: Security/SAST.gitlab-ci.yml
+
 variables:
   # When using dind service, we need to instruct docker to talk with
   # the daemon started inside of the service. The daemon is available
@@ -26,25 +30,20 @@ variables:
   DOCKER_CERT_PATH: "$DOCKER_TLS_CERTDIR/client"
 
 stages:
-  - build
   - test
   - deploy
 
-services:
-  - docker:19.03.10-dind
+#build-job:
+#  stage: build
+#  services:
+#  - docker:19.03.10-dind
+#  script:
+#    # https://gitlab.com/gitlab-org/gitlab-runner/-/issues/27384
+#    - sleep 5 
+#    - docker info
+#    - echo "This builds something"
 
-before_script:
-  # https://gitlab.com/gitlab-org/gitlab-runner/-/issues/27384
-  - sleep 5 
-  - docker info
-
- 
-build-job:
-  stage: build
-  script:
-    - echo "This builds something"
-
-test-python:
+python-tests:
   stage: test
   variables:
     PRE_COMMIT_HOME: ${CI_PROJECT_DIR}/.cache/pre-commit
