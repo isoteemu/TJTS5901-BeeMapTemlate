@@ -60,14 +60,23 @@ dast:
   image: owasp/zap2docker-stable
   variables:
     website: https://agile-team-299406.ew.r.appspot.com/
+
+  # https://www.zaproxy.org/docs/docker/baseline-scan/
+  # -t target         target URL including the protocol, eg https://www.example.com
+  # -r report_html    file to write the full ZAP HTML report
+  # -w report_md      file to write the full ZAP Wiki (Markdown) report
+  # -x report_xml     file to write the full ZAP XML report
+  # -J report_json    file to write the full ZAP JSON document
+  # -j                use the Ajax spider in addition to the traditional one  
   script:
     - mkdir /zap/wrk/
-    - /zap/zap-baseline.py -J gl-dast-report.json -t $website || true
+    - /zap/zap-baseline.py -J gl-dast-report.json -j -r gl-dast-report.html -w gl-dast-report.md -t $website || true 
     - cp /zap/wrk/gl-dast-report.json .
   artifacts:
-    paths: [gl-dast-report.json]
-
-
+    paths: 
+      - gl-dast-report.json
+      - gl-dast-report.html
+      - gl-dast-report.md
 
 
 deploy:
