@@ -60,6 +60,10 @@ test-python:
     - pytest tests --cov --cov-report term --cov-report html
     - pre-commit install
     - pre-commit run --all-files
+  artifacts:
+    when: always
+    paths:
+      - htmlcov
 
 
 
