@@ -1,16 +1,37 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect
 import os
 from google.cloud import datastore
 import time
 import uuid
 
-app = Flask(__name__)
+from flask_wtf.recaptcha import RecaptchaField
+from flask_wtf import FlaskForm
+from wtforms import StringField, FileField
+from wtforms.validators import DataRequired, Length
+from wtforms.fields.html5 import EmailField
+from flask_wtf.file import FileAllowed, FileRequired
 
-datastore_client = datastore.Client('agile-team-299406')
+app = Flask(__name__)
+SECRET_KEY = os.urandom(32)
+app.config['SECRET_KEY'] = SECRET_KEY
+app.config['RECAPTCHA_PUBLIC_KEY'] = '6LeYIbsSAAAAACRPIllxA7wvXjIE411PfdB2gt2J'
+app.config['RECAPTCHA_PRIVATE_KEY'] = '6LeYIbsSAAAAAJezaIq3Ft_hSTo0YtyeFG-JgRtu'
+
+datastore_client = datastore.Client()
+
+class MyForm(FlaskForm):
+    firstname = StringField('firstname', validators=[DataRequired()])
+    surname = StringField('surname', validators=[DataRequired()])
+    #recaptcha = RecaptchaField()
+    email = EmailField('email', validators=[DataRequired()])
+    file = FileField('file', validators=[
+        FileAllowed(['jpg','png'],'Images only!')
+        ])
 
 @app.route('/')
 def home():
 
+    form = MyForm()
     locations = []
     for latlng in datastore_client.query(kind='HiveLocation').fetch():
         locations.append({
@@ -18,22 +39,24 @@ def home():
             "lon": latlng['LatLng'].longitude
         })
 
-    return render_template('mymap.html', hive_locations=locations)
+    return render_template('mymap.html', hive_locations=locations, form=form)
 
 
 @app.route('/save', methods=['POST'])
 def save_to_db():
-    data = request.data.decode()
-
-
-    kind = 'HiveLocation'
-    name = uuid.uuid5("farts", "foo")
-    task_key = datastore_client.key(kind, name)
-    task = datastore.Entity(key=task_key)
-    task['location'] = data
-    task['bonus'] = 'something'
-
-    datastore_client.put(task)
+    form = MyForm()
+    if form.validate_on_submit():
+        firstname = form.firstname.data
+        surname = form.surname.data
+        email = form.email.data
+        name = firstname + surname
+        kind = 'Email'
+        task_key = datastore_client.key(kind, name)
+        task = datastore.Entity(key=task_key)
+        task['Email'] = email
+        
+        datastore_client.put(task)
+    return home()
 
 
 @app.route('/delete', methods=['DELETE'])

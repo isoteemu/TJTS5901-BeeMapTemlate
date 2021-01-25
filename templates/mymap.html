@@ -39,9 +39,19 @@
     // show the scale bar on the lower left corner
     L.control.scale().addTo(map);
 
+    // popup to marker
+    var pop = L.popup({});
+    pop.setContent('<form method="POST" action="/save">\
+    {{ form.csrf_token }}\
+    {{ form.firstname.label}} {{ form.firstname(size=20) }}<br/>\
+    {{ form.surname.label}} {{ form.surname(size=20) }}<br/>\
+    {{form.email.label}} {{form.email}}\
+    {{form.file}}\
+    <input type="submit" value="Go">\
+    </form>');
     // show a marker on the map
     {% for item in hive_locations %}
-      L.marker({{item | tojson}}).bindPopup('spam').addTo(map);
+      L.marker({{item | tojson}}).bindPopup(pop).addTo(map);
     {% endfor %}
     
     //Array of all the markers that we create
