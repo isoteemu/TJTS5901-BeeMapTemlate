@@ -3,6 +3,11 @@ import os
 from google.cloud import datastore
 import time
 import uuid
+import logging
+
+# Set up the most basic logging.
+logger = logging.getLogger(__name__)
+logging.basicConfig()
 
 app = Flask(__name__)
 
@@ -50,7 +55,13 @@ def load_db():
 
 
 if __name__ == '__main__':
+
     host = os.getenv("HOST", "127.0.0.1")
     port = os.getenv("PORT", "5000")
 
-    app.run(host=host, port=port)
+    if app.config['DEBUG']:
+        logger.setLevel(logging.DEBUG)
+
+    logger.info(f"Starting {__name__} loop at {host}:{port}")
+
+    app.run(host=host, port=port) or logger.warning(f"Flask app {__name__} failed!")
