@@ -55,9 +55,10 @@ test-python:
     - export PYTHONPATH=.
     - export FLASK_APP=web
     - apk update -q
-    - apk add python3 python3-dev py3-pip
+    - apk add python3 python3-dev py3-pip git
     - pip3 install Flask pytest pytest-cov pre-commit
     - pytest tests --cov --cov-report term --cov-report html
+    - pre-commit install
     - pre-commit run --all-files
 
 
