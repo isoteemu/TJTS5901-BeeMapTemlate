@@ -31,6 +31,7 @@ variables:
   website: https://agile-team-299406.ew.r.appspot.com/
 stages:
   - test
+  - dast
   - deploy
 
 #build-job:
