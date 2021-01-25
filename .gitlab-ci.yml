@@ -2,7 +2,7 @@ image: docker:19.03.10
 
 # Static Application Security Tests by Gitlab CI
 include:
-  - template: DAST.gitlab-ci.yml
+  - template: Security/DAST.gitlab-ci.yml
   
 variables:
   # When using dind service, we need to instruct docker to talk with
@@ -28,7 +28,7 @@ variables:
   # https://gitlab.com/gitlab-org/gitlab-runner/-/issues/4125
   DOCKER_TLS_VERIFY: 1
   DOCKER_CERT_PATH: "$DOCKER_TLS_CERTDIR/client"
-
+  website: https://agile-team-299406.ew.r.appspot.com/
 stages:
   - test
   - deploy
