@@ -29,23 +29,18 @@ variables:
   DOCKER_CERT_PATH: "$DOCKER_TLS_CERTDIR/client"
 
 stages:
-  - build
   - test
   - deploy
 
-services:
-  - docker:19.03.10-dind
-
-before_script:
-  # https://gitlab.com/gitlab-org/gitlab-runner/-/issues/27384
-  - sleep 5 
-  - docker info
-
- 
-build-job:
-  stage: build
-  script:
-    - echo "This builds something"
+#build-job:
+#  stage: build
+#  services:
+#  - docker:19.03.10-dind
+#  script:
+#    # https://gitlab.com/gitlab-org/gitlab-runner/-/issues/27384
+#    - sleep 5 
+#    - docker info
+#    - echo "This builds something"
 
 test-job1:
   stage: test
