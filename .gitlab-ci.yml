@@ -1,5 +1,8 @@
 image: docker:19.03.10
 
+include:
+  - template: Security/SAST.gitlab-ci.yml
+
 variables:
   # When using dind service, we need to instruct docker to talk with
   # the daemon started inside of the service. The daemon is available
