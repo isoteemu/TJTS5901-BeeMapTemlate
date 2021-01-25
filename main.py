@@ -23,6 +23,8 @@ def home():
             "lon": latlng['LatLng'].longitude
         })
 
+    logger.debug("Found %d HiveLocation entries for map." % len(locations))
+
     return render_template('mymap.html', hive_locations=locations)
 
 
