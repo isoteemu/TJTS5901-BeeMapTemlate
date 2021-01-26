@@ -1,8 +1,4 @@
 image: docker:19.03.10
-
-# Static Application Security Tests by Gitlab CI
-include:
-
   
 variables:
   # When using dind service, we need to instruct docker to talk with
