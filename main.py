@@ -5,6 +5,9 @@ import time
 import uuid
 
 app = Flask(__name__)
+app.config.from_pyfile("default_config.py")
+# silent param allows missing config files.
+app.config.from_pyfile("instance_config.py", silent=True)
 
 datastore_client = datastore.Client()
 

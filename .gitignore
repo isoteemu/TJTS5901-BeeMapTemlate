@@ -138,3 +138,4 @@ dmypy.json
 cython_debug/
 
 package-lock.json
+instance_config.py
