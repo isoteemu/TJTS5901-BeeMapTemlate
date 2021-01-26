@@ -1,9 +1,5 @@
 image: docker:19.03.10
-
-# Static Application Security Tests by Gitlab CI
-include:
-  - template: Security/SAST.gitlab-ci.yml
-
+  
 variables:
   # When using dind service, we need to instruct docker to talk with
   # the daemon started inside of the service. The daemon is available
@@ -28,9 +24,11 @@ variables:
   # https://gitlab.com/gitlab-org/gitlab-runner/-/issues/4125
   DOCKER_TLS_VERIFY: 1
   DOCKER_CERT_PATH: "$DOCKER_TLS_CERTDIR/client"
+  
 
 stages:
   - test
+  - dast
   - deploy
 
 #build-job:
@@ -53,6 +51,57 @@ python-tests:
     - pip3 install Flask pytest pytest-cov
     - pytest tests --cov --cov-report term --cov-report html
 
+dast-baseline:
+  stage: dast
+  image: owasp/zap2docker-stable
+  variables:
+    website: https://agile-team-299406.ew.r.appspot.com/
+
+  # https://www.zaproxy.org/docs/docker/baseline-scan/
+  # -t target         target URL including the protocol, eg https://www.example.com
+  # -r report_html    file to write the full ZAP HTML report
+  # -w report_md      file to write the full ZAP Wiki (Markdown) report
+  # -x report_xml     file to write the full ZAP XML report
+  # -J report_json    file to write the full ZAP JSON document
+  # -j                use the Ajax spider in addition to the traditional one  
+  script:
+    - mkdir /zap/wrk/
+    - /zap/zap-baseline.py -J gl-dast-report.json -j -r gl-dast-report.html -w gl-dast-report.md -t $website || true 
+    - cp /zap/wrk/gl-dast-report.json .
+    - cp /zap/wrk/gl-dast-report.html .
+    - cp /zap/wrk/gl-dast-report.md .
+  artifacts:
+    paths: 
+      - gl-dast-report.json
+      - gl-dast-report.html
+      - gl-dast-report.md
+
+dast-fullscan:
+  stage: dast
+  image: owasp/zap2docker-stable
+  variables:
+    website: https://agile-team-299406.ew.r.appspot.com/
+
+  # https://www.zaproxy.org/docs/docker/baseline-scan/
+  # -t target         target URL including the protocol, eg https://www.example.com
+  # -r report_html    file to write the full ZAP HTML report
+  # -w report_md      file to write the full ZAP Wiki (Markdown) report
+  # -x report_xml     file to write the full ZAP XML report
+  # -J report_json    file to write the full ZAP JSON document
+  # -j                use the Ajax spider in addition to the traditional one  
+  script:
+    - mkdir /zap/wrk/
+    - /zap/zap-full-scan.py -J gl-dast-fullscan-report.json -j -r gl-dast-fullscan-report.html -w gl-dast-fullscan-report.md -t $website || true 
+    - cp /zap/wrk/gl-dast-fullscan-report.json .
+    - cp /zap/wrk/gl-dast-fullscan-report.html .
+    - cp /zap/wrk/gl-dast-fullscan-report.md .
+  artifacts:
+    paths: 
+      - gl-dast-fullscan-report.json
+      - gl-dast-fullscan-report.html
+      - gl-dast-fullscan-report.md
+  when:
+    manual
 
 deploy:
   stage: deploy
