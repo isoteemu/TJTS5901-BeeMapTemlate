@@ -21,6 +21,10 @@
       width: 100%;
       height: 100%;
     }
+
+    .twt:hover {
+      box-shadow: 0 0 11px rgba(33, 33, 33, .2);
+    }
   </style>
 </head>
 
@@ -51,14 +55,15 @@
     </form>');
     // show a marker on the map
     {% for item in hive_locations %}
-      L.marker({{item | tojson}}).bindPopup(pop).addTo(map);
+    L.marker({{ item | tojson}}).bindPopup(pop).addTo(map);
     {% endfor %}
-    
+
     //Array of all the markers that we create
     var allMarkers = [];
 
     // Function saves beehive's location to database and to local map
     function savePopup() {
+
       //Data that we want to send to server and save as a beehive location
       var data = document.getElementById("edit").value;
 
@@ -73,7 +78,7 @@
 
     function saveValue() {
       document.getElementById("loc").innerHTML = document.getElementById("edit").value
-  
+
     }
 
     //Create GeoJSON layer for user generated data
@@ -88,16 +93,33 @@
       //Set popup lat lng where clicked
       markerpopup.setLatLng(e.latlng);
       //lat lng where clicked to string
-      var placement = e.latlng.toString()
+      var location = e.latlng
+        
       //Set popup content
-      markerpopup.setContent('<form>\
-      <label style="font-weight: bold;">Beehive location: </label>\
-      <label id="loc">Unknown</label><br />\
-      <label style="font-weight: bold;">Set a new location: </label>\
-      <input id="edit" name="edit" onvaluechange="saveValue()" value="Type here"/></form>\
-      <button onclick="savePopup()">Save</button>');
+      markerpopup.setContent('<form method="POST" action="/save">\
+    {{ form.csrf_token }}\
+    {{ form.firstname.label}} {{ form.firstname(size=20) }}<br/>\
+    {{ form.surname.label}} {{ form.surname(size=20) }}<br/>\
+    {{form.email.label}} {{form.email}}\<br/>\
+    {{form.comment.label}} {{form.comment}}\<br/>\
+    {{form.file}}\<br/>\
+    <input type="submit" value="Submit" onClick="savePopup()"><br/>\
+    \
+    <a href="https://twitter.com/intent/tweet?url=https://beeings.org/&text=I found a new beehive! Check out Beeings!" target="_blank" title="Share on Twitter">\
+    <img src="https://logos-world.net/wp-content/uploads/2020/04/Twitter-Logo.png"\
+    class="twt" alt="Twitter" style="width:72px;height:42px;"></a>\
+    \
+    <a href="mailto:?subject=[Subject]&body=:[body]" target="_blank" title="Email">\
+    <img src="https://freepngimg.com/thumb/logo/62503-logo-computer-email-icons-download-hq-png.png"\
+    class="twt "alt="email" width="60" height="60">\
+    </a>\
+    </form>');
+
       //Bind marker popup
-      marker.bindPopup(markerpopup);
+      marker.bindPopup(markerpopup, {
+        maxWidth: 560,
+        maxHeight: 560
+      });
       //Add marker to geojson layer
       drawnItems.addLayer(marker);
 
@@ -117,4 +139,5 @@
 
   </script>
 </body>
+
 </html>
