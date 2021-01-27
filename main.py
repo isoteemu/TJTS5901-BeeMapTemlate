@@ -1,12 +1,13 @@
-from flask import Flask, render_template
+""" Apps backend """
 import os
-from google.cloud import datastore
 
+from flask import Flask
+from flask import render_template
 from flask_wtf import FlaskForm
-from wtforms import StringField, FileField
-from wtforms.validators import DataRequired
+from google.cloud import datastore
+from wtforms import StringField
 from wtforms.fields.html5 import EmailField
-from flask_wtf.file import FileAllowed
+from wtforms.validators import DataRequired
 
 app = Flask(__name__)
 SECRET_KEY = os.urandom(32)
@@ -18,6 +19,8 @@ datastore_client = datastore.Client()
 
 
 class MyForm(FlaskForm):
+    """ Form  to save the added location"""
+
     firstname = StringField("firstname", validators=[DataRequired()])
     surname = StringField("surname", validators=[DataRequired()])
     # recaptcha = RecaptchaField()
@@ -26,7 +29,7 @@ class MyForm(FlaskForm):
 
 @app.route("/")
 def home():
-
+    """ Apps home page """
     form = MyForm()
     locations = []
     for latlng in datastore_client.query(kind="HiveLocation").fetch():
@@ -39,6 +42,7 @@ def home():
 
 @app.route("/save", methods=["POST"])
 def save_to_db():
+    """ Saving the form """
     form = MyForm()
     if form.validate_on_submit():
         firstname = form.firstname.data
@@ -56,11 +60,12 @@ def save_to_db():
 
 @app.route("/delete", methods=["DELETE"])
 def delete_from_db():
-    pass
+    """ method to delete entries from database """
 
 
 @app.route("/update", methods=["GET"])
 def load_db():
+    """ method to lead entries from database (UNUSED) """
     query = datastore_client.query(kind="HiveLocation")
     query.order = ["location"]
     data = list(query.fetch())
