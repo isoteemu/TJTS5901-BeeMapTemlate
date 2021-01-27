@@ -50,8 +50,9 @@
     // Function saves beehive's location to database and to local map
     function savePopup() {
       //Data that we want to send to server and save as a beehive location
-      var data = document.getElementById("edit").value;
-
+      var firstname = document.getElementById("firstname").value;
+      var familyname = document.getElementById("familyname").value;
+      var email = document.getElementById("email").value;
       //HTTP request to server
       var request = new XMLHttpRequest();
       request.open('POST', '/save', true);
@@ -80,7 +81,16 @@
       //lat lng where clicked to string
       var placement = e.latlng.toString()
       //Set popup content
-      markerpopup.setContent('<form><label style="font-weight: bold;">Beehive location: </label><label id="loc">Unknown</label><br /><label style="font-weight: bold;">Set a new location: </label><input id="edit" name="edit" onvaluechange="saveValue()" value="Type here"/></form><button onclick="savePopup()">Save</button>');
+      markerpopup.setContent('<form>\
+        <label for="firstname"> Your Firstname: </label>\
+        <input type="text" id="firstname ></br>\
+        \
+        <label> Your Familyname: </label>\
+        <input type="text" id="familyname >\
+        \
+        <label> Your email </label>\
+        <input type= "email" id="email">\
+        <button onclick="savePopup()">Save</button></form>');
       //Bind marker popup
       marker.bindPopup(markerpopup);
       //Add marker to geojson layer
