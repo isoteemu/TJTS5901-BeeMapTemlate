@@ -16,6 +16,7 @@ from opencensus.trace.status import Status
 logger = logging.getLogger(__name__)
 logging.basicConfig()
 
+logger = logging.getLogger(__name__)
 app = Flask(__name__)
 
 datastore_client = datastore.Client()
