@@ -1,5 +1,4 @@
 import os
-import uuid
 
 from flask import Flask
 from flask import render_template
@@ -26,16 +25,21 @@ def home():
     return render_template("mymap.html", hive_locations=locations)
 
 
-@app.route("/save", methods=["POST"])
+@app.route("/save", methods=["GET","POST"])
 def save_to_db():
-    data = request.data.decode()
 
+    data = request.get_json()
+    print("saved", data.get("latitude"),"!")
     kind = "HiveLocation"
-    name = uuid.uuid5("farts", "foo")
+    name = "nimi"
     task_key = datastore_client.key(kind, name)
     task = datastore.Entity(key=task_key)
-    task["location"] = data
-    task["bonus"] = "something"
+    task["LatLng"] = {
+                        "latitude": data["latitude"],
+                         "longitude": data["longitude"]}
+    #task["Firstname"] = data.firstname
+    #task["Familyname"] = data.familyname
+    #task["email"] = data.email
 
     datastore_client.put(task)
 
