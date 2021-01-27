@@ -86,6 +86,19 @@ def load_db():
     print(data)
 
 
+@app.route("/_divide_by_zero/<int:number>")
+def division_by_zero(number: int):
+    """Divide by zero. Should raise exception.
+    Try requesting http://your-app/_divide_by_zero/7
+    """
+    result = -1
+    try:
+        result = number / 0
+    except ZeroDivisionError:
+        logger.exception("Failed to divide by zero", exc_info=True)
+    return f"{number} divided by zeor is {result}"
+
+
 def _setup_azure_logging(logger: logging.Logger, app: Flask, connection_string: str):
     """Setup logging into Azure Application Insights.
 
