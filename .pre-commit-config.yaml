@@ -20,11 +20,12 @@ repos:
     -   id: check-ast
     -   id: requirements-txt-fixer
 
-# Black is the uncompromising Python code formatter. By using it, you agree to cede control over minutiae of hand-formatting.    
--   repo: https://github.com/psf/black
-    rev: 19.3b0
-    hooks:
-    -   id: black    
+# Too agressive, taken off
+# # Black is the uncompromising Python code formatter. By using it, you agree to cede control over minutiae of hand-formatting.    
+# -   repo: https://github.com/psf/black
+#     rev: 19.3b0
+#     hooks:
+#     -   id: black    
 
 # zimports - Python import rewriter
 -   repo: https://github.com/sqlalchemyorg/zimports
