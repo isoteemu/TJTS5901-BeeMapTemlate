@@ -4,20 +4,11 @@ import os
 from flask import Flask
 from flask import render_template
 from flask_wtf import FlaskForm
-<<<<<<< HEAD
-from wtforms import StringField, FileField, TextField
-from wtforms.validators import DataRequired, Length
-=======
 from google.cloud import datastore
 from wtforms import StringField
->>>>>>> 88e4b13d81872b2bbbad330d99724c298941141c
+from wtforms import TextField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired
-
-from flask import Flask
-from flask import render_template
-from flask import request
-from google.cloud import datastore
 
 app = Flask(__name__)
 SECRET_KEY = os.urandom(32)
@@ -29,23 +20,10 @@ datastore_client = datastore.Client()
 
 
 class MyForm(FlaskForm):
-<<<<<<< HEAD
-    firstname = StringField('firstname', validators=[DataRequired()])
-    surname = StringField('surname', validators=[DataRequired()])
-    comment = TextField('comment', validators=[DataRequired()])
-    #recaptcha = RecaptchaField()
-    email = EmailField('email', validators=[DataRequired()])
-    file = FileField('file', validators=[
-        FileAllowed(['jpg','png'],'Images only!')
-        ])
-=======
-    """ Form  to save the added location"""
-
     firstname = StringField("firstname", validators=[DataRequired()])
     surname = StringField("surname", validators=[DataRequired()])
-    # recaptcha = RecaptchaField()
+    comment = TextField("comment", validators=[DataRequired()])
     email = EmailField("email", validators=[DataRequired()])
->>>>>>> 88e4b13d81872b2bbbad330d99724c298941141c
 
 
 @app.route("/")
@@ -76,14 +54,13 @@ def save_to_db():
         task["Email"] = email
 
         datastore_client.put(task)
-        
+
         locations = []
-        for latlng in datastore_client.query(kind='HiveLocation').fetch():
-            locations.append({
-            "lat": latlng['LatLng'].latitude,
-            "lon": latlng['LatLng'].longitude
-        })
-    return render_template('mymap.html', hive_locations=locations, form=form)
+        for latlng in datastore_client.query(kind="HiveLocation").fetch():
+            locations.append(
+                {"lat": latlng["LatLng"].latitude, "lon": latlng["LatLng"].longitude}
+            )
+    return render_template("mymap.html", hive_locations=locations, form=form)
 
 
 @app.route("/delete", methods=["DELETE"])

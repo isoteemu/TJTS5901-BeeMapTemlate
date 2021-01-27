@@ -17,10 +17,6 @@ repos:
     hooks:
     -   id: check-yaml
     -   id: end-of-file-fixer
-<<<<<<< HEAD
-    -   id: trailing-whitespace
-=======
->>>>>>> 88e4b13d81872b2bbbad330d99724c298941141c
     -   id: check-ast
     -   id: requirements-txt-fixer
 
@@ -30,22 +26,8 @@ repos:
     hooks:
     -   id: black    
 
-<<<<<<< HEAD
-# Python code style and quality    
--   repo: https://gitlab.com/PyCQA/flake8
-    rev: 3.8.4
-    hooks:
-    -   id: flake8
-
-# Checks for dead code    
--   repo: https://github.com/asottile/dead
-    rev: v1.3.0
-    hooks:
-    -   id: dead
-=======
 # zimports - Python import rewriter
 -   repo: https://github.com/sqlalchemyorg/zimports
     rev: 0.2.0
     hooks:
     -   id: zimports
->>>>>>> 88e4b13d81872b2bbbad330d99724c298941141c

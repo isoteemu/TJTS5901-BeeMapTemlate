@@ -94,15 +94,18 @@
       markerpopup.setLatLng(e.latlng);
       //lat lng where clicked to string
       var location = e.latlng
-        
+      var Lat = location.lat
+      var Lng = location.lng
+
       //Set popup content
       markerpopup.setContent('<form method="POST" action="/save">\
     {{ form.csrf_token }}\
+    {{ form.Lat(Lat)}} {{ form.Lng(Lng)}}\
     {{ form.firstname.label}} {{ form.firstname(size=20) }}<br/>\
     {{ form.surname.label}} {{ form.surname(size=20) }}<br/>\
-    {{form.email.label}} {{form.email}}\<br/>\
-    {{form.comment.label}} {{form.comment}}\<br/>\
-    {{form.file}}\<br/>\
+    {{ form.email.label}} {{ form.email}}\<br/>\
+    {{ form.comment.label}} {{ form.comment}}\<br/>\
+    {{ form.file}}\<br/>\
     <input type="submit" value="Submit" onClick="savePopup()"><br/>\
     \
     <a href="https://twitter.com/intent/tweet?url=https://beeings.org/&text=I found a new beehive! Check out Beeings!" target="_blank" title="Share on Twitter">\
@@ -139,9 +142,5 @@
 
   </script>
 </body>
-<<<<<<< HEAD
 
 </html>
-=======
-</html>
->>>>>>> 88e4b13d81872b2bbbad330d99724c298941141c
