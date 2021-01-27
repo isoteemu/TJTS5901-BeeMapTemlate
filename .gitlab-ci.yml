@@ -128,8 +128,10 @@ test-stating:
     - pip install -r requirements.txt
     - pip install pytest
     # Run tests that has been marked by "@pytest.mark.staging"
-    - pytest --verbose test -m "staging"
+    - pytest --verbose tests -m "staging"
 
+  only:
+    - master
 
 staging:
   # Staging is same as deployment, but uses app-staging.yaml to deploy.
@@ -142,7 +144,6 @@ staging:
   # Copy config file
   - mv $INSTANCE_CONFIG_PRODUCTION instance_config.py
   - gcloud --quiet --project $PROJECT_ID app deploy app-staging.yaml
-  - rm appcredentials.json
 
   only:
     - master
