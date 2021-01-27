@@ -1,3 +1,8 @@
+# TJTS5901
+
+[![pipeline status](https://gitlab.jyu.fi/startuplab/courses/tjts5901-continuous-software-engineering/beemaptemplate/badges/master/pipeline.svg)](https://gitlab.jyu.fi/startuplab/courses/tjts5901-continuous-software-engineering/beemaptemplate/-/commits/master) 
+[![coverage report](https://gitlab.jyu.fi/startuplab/courses/tjts5901-continuous-software-engineering/beemaptemplate/badges/master/coverage.svg)](https://gitlab.jyu.fi/startuplab/courses/tjts5901-continuous-software-engineering/beemaptemplate/-/commits/master)
+
 This repository was created to be an example for the course work.
 
 Python 3.8.5
