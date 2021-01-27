@@ -6,7 +6,7 @@ import uuid
 
 from flask_wtf.recaptcha import RecaptchaField
 from flask_wtf import FlaskForm
-from wtforms import StringField, FileField
+from wtforms import StringField, FileField, TextField
 from wtforms.validators import DataRequired, Length
 from wtforms.fields.html5 import EmailField
 from flask_wtf.file import FileAllowed, FileRequired
@@ -22,6 +22,7 @@ datastore_client = datastore.Client()
 class MyForm(FlaskForm):
     firstname = StringField('firstname', validators=[DataRequired()])
     surname = StringField('surname', validators=[DataRequired()])
+    comment = TextField('comment', validators=[DataRequired()])
     #recaptcha = RecaptchaField()
     email = EmailField('email', validators=[DataRequired()])
     file = FileField('file', validators=[
@@ -56,7 +57,14 @@ def save_to_db():
         task['Email'] = email
         
         datastore_client.put(task)
-    return home()
+        
+        locations = []
+        for latlng in datastore_client.query(kind='HiveLocation').fetch():
+            locations.append({
+            "lat": latlng['LatLng'].latitude,
+            "lon": latlng['LatLng'].longitude
+        })
+    return render_template('mymap.html', hive_locations=locations, form=form)
 
 
 @app.route('/delete', methods=['DELETE'])
