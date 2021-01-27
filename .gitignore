@@ -112,6 +112,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+beemap/
 
 # Spyder project settings
 .spyderproject
@@ -139,3 +140,4 @@ cython_debug/
 
 package-lock.json
 instance_config.py
+.vscode/settings.json
