@@ -64,7 +64,7 @@ except Exception:
 
 See more: <https://docs.python.org/dev/library/logging.html#logging.Logger.exception>
 
-### Adding log streaming and off-site monitoring.
+### Adding log streaming
 
 By using OpenCensus framework[^Notice_of_OpenCensus_Deprecation], logs and metrics can be sent to a different analysis and retention services. As it would be somewhat silly to monitor google network within google network, we utilize Azure in thease demos as off-site solution. More for adventurous people another OpenCensus streaming target could be a on-premises [Zipkin](https://opencensus.io/exporters/supported-exporters/python/zipkin/), [Jaeger](https://opencensus.io/exporters/supported-exporters/python/jaeger/). And google fanbois can also add [Stackdriver](https://opencensus.io/exporters/supported-exporters/python/stackdriver/).
 
@@ -128,7 +128,7 @@ Trace handler integrates into general python logging framework, and streams logg
 
     Reference implementation: a863da5f
 
-3. Add some logging entries into your code. Example into map view:
+3. Add some logging entries into your code. For example into map view:
 
     ```python
     location_count = len(locations)
