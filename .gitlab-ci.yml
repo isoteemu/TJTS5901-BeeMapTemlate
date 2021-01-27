@@ -1,5 +1,9 @@
 image: docker:19.03.10
-  
+
+# Static Application Security Tests by Gitlab CI
+include:
+  - template: Security/SAST.gitlab-ci.yml
+
 variables:
   # When using dind service, we need to instruct docker to talk with
   # the daemon started inside of the service. The daemon is available
