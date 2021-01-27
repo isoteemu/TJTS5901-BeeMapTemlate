@@ -136,12 +136,15 @@ staging:
     name: staging
   image: google/cloud-sdk:alpine
   script:
-  - cp $GOOGLE_APPLICATION_CREDENTIALS appcredentials.json
+  - echo "Staging address: $WEBSITE_STAGING"
   - gcloud auth activate-service-account --key-file $GOOGLE_APPLICATION_CREDENTIALS
   # Copy config file
   - mv $INSTANCE_CONFIG_PRODUCTION instance_config.py
-  - gcloud --quiet --project $PROJECT_ID app deploy app.yaml
+  - gcloud --quiet --project $PROJECT_ID app deploy app-staging.yaml
   - rm appcredentials.json
+
+  only:
+    - master
 
 deploy:
   stage: deploy
@@ -149,12 +152,10 @@ deploy:
     name: production
   image: google/cloud-sdk:alpine
   script:
-  - cp $GOOGLE_APPLICATION_CREDENTIALS appcredentials.json
   - gcloud auth activate-service-account --key-file $GOOGLE_APPLICATION_CREDENTIALS
   # Copy config file
   - mv $INSTANCE_CONFIG_PRODUCTION instance_config.py
   - gcloud --quiet --project $PROJECT_ID app deploy app.yaml
-  - rm appcredentials.json
 
   only:
     - master
