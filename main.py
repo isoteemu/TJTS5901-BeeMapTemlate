@@ -9,6 +9,8 @@ from opencensus.ext.azure.log_exporter import AzureLogHandler
 from opencensus.ext.azure.trace_exporter import AzureExporter
 from opencensus.ext.flask.flask_middleware import FlaskMiddleware
 from opencensus.trace.samplers import ProbabilitySampler
+from opencensus.trace import execution_context
+from opencensus.trace.status import Status
 
 # Set up the most basic logging.
 logger = logging.getLogger(__name__)
@@ -23,13 +25,35 @@ datastore_client = datastore.Client()
 def home():
 
     locations = []
-    for latlng in datastore_client.query(kind='HiveLocation').fetch():
-        locations.append({
-            "lat": latlng['LatLng'].latitude,
-            "lon": latlng['LatLng'].longitude
-        })
 
-    logger.debug("Found %d HiveLocation entries for map." % len(locations))
+    # Setup custom tracer
+    # Get the Tracer object
+    tracer = execution_context.get_opencensus_tracer()
+    # Name should be descriptive
+    with tracer.span(name="datastore.query()") as span:
+
+        kind = "HiveLocation"
+        for latlng in datastore_client.query(kind=kind).fetch():
+            locations.append({
+                "lat": latlng['LatLng'].latitude,
+                "lon": latlng['LatLng'].longitude
+            })
+
+        location_count = len(locations)
+        logger.debug("Found %d HiveLocation entries for map." % location_count)
+
+        # Add info into our trace
+        # Annotation: https://opencensus.io/tracing/span/time_events/annotation/
+        # Status: https://opencensus.io/tracing/span/status/
+
+        # For annotation first param is description, additional are freeform attributes
+        span.add_annotation("Query all hive locations from datastore", kind=kind, count=location_count)
+
+        if location_count > 0:
+            span.status = Status(0, "Found %d hive locations." % location_count)
+        else:
+            # Not found
+            span.status = Status(5, "Zero locations found.")
 
     return render_template('mymap.html', hive_locations=locations)
 
@@ -92,7 +116,7 @@ _app_insight_connection = app.config.get("APPLICATIONINSIGHTS_CONNECTION_STRING"
 if _app_insight_connection:
     _setup_azure_logging(logger, app, _app_insight_connection)
 else:
-    logger.warn("Missing azure application insight key. Logging to azure disabled.")
+    raise RuntimeError("Missing azure application insight key configuration value.")
 
 
 if __name__ == '__main__':
