@@ -136,7 +136,7 @@ staging:
     name: staging
   image: google/cloud-sdk:alpine
   script:
-  - echo "Staging address: $WEBSITE_STAGING"
+  - echo Staging address: $WEBSITE_STAGING
   - gcloud auth activate-service-account --key-file $GOOGLE_APPLICATION_CREDENTIALS
   # Copy config file
   - mv $INSTANCE_CONFIG_PRODUCTION instance_config.py
