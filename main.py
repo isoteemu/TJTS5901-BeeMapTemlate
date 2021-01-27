@@ -5,6 +5,11 @@ import time
 import uuid
 import logging
 
+from opencensus.ext.azure.log_exporter import AzureLogHandler
+from opencensus.ext.azure.trace_exporter import AzureExporter
+from opencensus.ext.flask.flask_middleware import FlaskMiddleware
+from opencensus.trace.samplers import ProbabilitySampler
+
 # Set up the most basic logging.
 logger = logging.getLogger(__name__)
 logging.basicConfig()
@@ -12,6 +17,7 @@ logging.basicConfig()
 app = Flask(__name__)
 
 datastore_client = datastore.Client()
+
 
 @app.route('/')
 def home():
@@ -55,6 +61,39 @@ def load_db():
     print(data)
 
 
+def _setup_azure_logging(logger: logging.Logger, app: Flask, connection_string: str):
+    """Setup logging into Azure Application Insights.
+
+    :see: https://docs.microsoft.com/en-us/azure/azure-monitor/app/opencensus-python
+
+    :param logger: Logging instance to assign azure opencensus stream handler.
+    :param app: Flask app instance to assing azure opencensus handler.
+    :param connection_string: Azure Application Insight connection string.
+    """
+
+    # Setup trace handler. Handles normal logging output:
+    # >>> logger.info("Info message")
+    azure_handler = AzureLogHandler(
+        connection_string=connection_string
+    )
+    logger.addHandler(azure_handler)
+
+    # Setup flask middleware, so pageview metrics are stored in azure.
+    FlaskMiddleware(
+        app,
+        exporter=AzureExporter(connection_string=connection_string),
+        sampler=ProbabilitySampler(rate=1.0),
+    )
+
+
+# Setup logging into azure.
+_app_insight_connection = app.config.get("APPLICATIONINSIGHTS_CONNECTION_STRING", "InstrumentationKey=8290acaa-c1f8-4b32-862a-543608df5871;IngestionEndpoint=https://northeurope-0.in.applicationinsights.azure.com/")
+
+if _app_insight_connection:
+    _setup_azure_logging(logger, app, _app_insight_connection)
+else:
+    logger.warn("Missing azure application insight key. Logging to azure disabled.")
+
 
 if __name__ == '__main__':
 
@@ -66,4 +105,6 @@ if __name__ == '__main__':
 
     logger.info(f"Starting {__name__} loop at {host}:{port}")
 
-    app.run(host=host, port=port) or logger.warning(f"Flask app {__name__} failed!")
+    app.run(host=host, port=port) or \
+        logger.info(f"Abrupt Flask app stoppage")
+
