@@ -1,6 +1,9 @@
 runtime: python38
 service: staging
 
+env_variables:
+  GOOGLE_APPLICATION_CREDENTIALS: appcredentials.json
+
 handlers:
 - url: /.*
   secure: always
