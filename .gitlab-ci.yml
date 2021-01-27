@@ -136,13 +136,12 @@ staging:
     name: staging
   image: google/cloud-sdk:alpine
   script:
-  - echo $SERVICE_ACCOUNT > /tmp/$CI_PIPELINE_ID.json
-  - echo $GOOGLE_APPLICATION_CREDENTIALS > appcredentials.json
-  - gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
+  - cp $GOOGLE_APPLICATION_CREDENTIALS appcredentials.json
+  - gcloud auth activate-service-account --key-file $GOOGLE_APPLICATION_CREDENTIALS
   # Copy config file
-  - cp $INSTANCE_CONFIG_PRODUCTION instance_config.py
-  - gcloud --quiet --project $PROJECT_ID app deploy --no-promote
-  - rm /tmp/$CI_PIPELINE_ID.json
+  - mv $INSTANCE_CONFIG_PRODUCTION instance_config.py
+  - gcloud --quiet --project $PROJECT_ID app deploy app.yaml
+  - rm appcredentials.json
 
 deploy:
   stage: deploy
@@ -150,13 +149,12 @@ deploy:
     name: production
   image: google/cloud-sdk:alpine
   script:
-  - echo $SERVICE_ACCOUNT > /tmp/$CI_PIPELINE_ID.json
-  - echo $GOOGLE_APPLICATION_CREDENTIALS > appcredentials.json
-  - gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
+  - cp $GOOGLE_APPLICATION_CREDENTIALS appcredentials.json
+  - gcloud auth activate-service-account --key-file $GOOGLE_APPLICATION_CREDENTIALS
   # Copy config file
-  - cp $INSTANCE_CONFIG_PRODUCTION instance_config.py
+  - mv $INSTANCE_CONFIG_PRODUCTION instance_config.py
   - gcloud --quiet --project $PROJECT_ID app deploy app.yaml
-  - rm /tmp/$CI_PIPELINE_ID.json
+  - rm appcredentials.json
 
   only:
     - master
