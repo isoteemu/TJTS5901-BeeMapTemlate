@@ -144,9 +144,6 @@ staging:
   - gcloud --quiet --project $PROJECT_ID app deploy --no-promote
   - rm /tmp/$CI_PIPELINE_ID.json
 
-  only:
-    - master
-
 deploy:
   stage: deploy
   environment:
