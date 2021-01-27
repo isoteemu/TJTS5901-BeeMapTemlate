@@ -1,2 +1,4 @@
 flask>=1.1
+flask_wtf
 google-cloud-datastore
+pylint
