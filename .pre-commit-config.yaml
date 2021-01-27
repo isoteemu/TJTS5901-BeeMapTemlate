@@ -26,6 +26,7 @@ repos:
     hooks:
     -   id: black    
 
+# zimports - Python import rewriter
 -   repo: https://github.com/sqlalchemyorg/zimports
     rev: 0.2.0
     hooks:

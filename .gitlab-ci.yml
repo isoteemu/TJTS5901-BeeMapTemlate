@@ -1,5 +1,9 @@
 image: docker:19.03.10
 
+# Static Application Security Tests by Gitlab CI
+include:
+  - template: Security/SAST.gitlab-ci.yml
+
 variables:
   # When using dind service, we need to instruct docker to talk with
   # the daemon started inside of the service. The daemon is available
@@ -24,48 +28,96 @@ variables:
   # https://gitlab.com/gitlab-org/gitlab-runner/-/issues/4125
   DOCKER_TLS_VERIFY: 1
   DOCKER_CERT_PATH: "$DOCKER_TLS_CERTDIR/client"
+  
 
 stages:
-  - build
   - test
+  - dast
   - deploy
 
-services:
-  - docker:19.03.10-dind
+#build-job:
+#  stage: build
+#  services:
+#  - docker:19.03.10-dind
+#  script:
+#    # https://gitlab.com/gitlab-org/gitlab-runner/-/issues/27384
+#    - sleep 5 
+#    - docker info
+#    - echo "This builds something"
 
-before_script:
-  # https://gitlab.com/gitlab-org/gitlab-runner/-/issues/27384
-  - sleep 5 
-  - docker info
-
- 
-build-job:
-  stage: build
-  script:
-    - echo "This builds something"
-
-test-job1:
+python-tests:
   stage: test
+  variables:
+    PRE_COMMIT_HOME: ${CI_PROJECT_DIR}/.cache/pre-commit
+  cache:
+    paths:
+      - ${PRE_COMMIT_HOME}
   script:
     - export PYTHONPATH=.
     - export FLASK_APP=web
     - apk update -q
-    - apk add python3 python3-dev py3-pip
-    - pip3 install Flask pytest pytest-cov
+    - apk add python3 python3-dev py3-pip git
+    - pip3 install Flask pytest pytest-cov pre-commit
     - pytest tests --cov --cov-report term --cov-report html
+    - pre-commit install
+    - pre-commit run --all-files
+  artifacts:
+    when: always
+    paths:
+      - htmlcov
 
-test-job2:
-  stage: test
+
+dast-baseline:
+  stage: dast
+  image: owasp/zap2docker-stable
+  variables:
+    website: https://agile-team-299406.ew.r.appspot.com/
+
+  # https://www.zaproxy.org/docs/docker/baseline-scan/
+  # -t target         target URL including the protocol, eg https://www.example.com
+  # -r report_html    file to write the full ZAP HTML report
+  # -w report_md      file to write the full ZAP Wiki (Markdown) report
+  # -x report_xml     file to write the full ZAP XML report
+  # -J report_json    file to write the full ZAP JSON document
+  # -j                use the Ajax spider in addition to the traditional one  
   script:
-    - echo "This job tests something, but takes more time than test-job1."
-    - echo "After the echo commands complete, it runs the sleep command for 20 seconds"
-    - echo "which simulates a test that runs 20 seconds longer than test-job1"
-    - sleep 20
-test-security:
-  stage: test
+    - mkdir /zap/wrk/
+    - /zap/zap-baseline.py -J gl-dast-report.json -j -r gl-dast-report.html -w gl-dast-report.md -t $website || true 
+    - cp /zap/wrk/gl-dast-report.json .
+    - cp /zap/wrk/gl-dast-report.html .
+    - cp /zap/wrk/gl-dast-report.md .
+  artifacts:
+    paths: 
+      - gl-dast-report.json
+      - gl-dast-report.html
+      - gl-dast-report.md
+
+dast-fullscan:
+  stage: dast
+  image: owasp/zap2docker-stable
+  variables:
+    website: https://agile-team-299406.ew.r.appspot.com/
+
+  # https://www.zaproxy.org/docs/docker/baseline-scan/
+  # -t target         target URL including the protocol, eg https://www.example.com
+  # -r report_html    file to write the full ZAP HTML report
+  # -w report_md      file to write the full ZAP Wiki (Markdown) report
+  # -x report_xml     file to write the full ZAP XML report
+  # -J report_json    file to write the full ZAP JSON document
+  # -j                use the Ajax spider in addition to the traditional one  
   script:
-    # build and run an application container
-    - echo "Maybe a security test here?"
+    - mkdir /zap/wrk/
+    - /zap/zap-full-scan.py -J gl-dast-fullscan-report.json -j -r gl-dast-fullscan-report.html -w gl-dast-fullscan-report.md -t $website || true 
+    - cp /zap/wrk/gl-dast-fullscan-report.json .
+    - cp /zap/wrk/gl-dast-fullscan-report.html .
+    - cp /zap/wrk/gl-dast-fullscan-report.md .
+  artifacts:
+    paths: 
+      - gl-dast-fullscan-report.json
+      - gl-dast-fullscan-report.html
+      - gl-dast-fullscan-report.md
+  when:
+    manual
 
 deploy:
   stage: deploy
@@ -76,6 +128,8 @@ deploy:
   - echo $SERVICE_ACCOUNT > /tmp/$CI_PIPELINE_ID.json
   - echo $GOOGLE_APPLICATION_CREDENTIALS > appcredentials.json
   - gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
+  # Copy config file
+  - cp $INSTANCE_CONFIG_PRODUCTION instance_config.py
   - gcloud --quiet --project $PROJECT_ID app deploy app.yaml
   - rm /tmp/$CI_PIPELINE_ID.json
 

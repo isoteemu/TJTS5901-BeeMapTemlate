@@ -141,3 +141,4 @@ cython_debug/
 
 package-lock.json
 .vscode/settings.json
+instance_config.py

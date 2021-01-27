@@ -9,6 +9,11 @@ from wtforms import StringField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired
 
+from flask import Flask
+from flask import render_template
+from flask import request
+from google.cloud import datastore
+
 app = Flask(__name__)
 SECRET_KEY = os.urandom(32)
 app.config["SECRET_KEY"] = SECRET_KEY
