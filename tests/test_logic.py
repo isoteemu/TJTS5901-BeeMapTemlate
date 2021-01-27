@@ -18,9 +18,9 @@ class LogicTests(unittest.TestCase):
 
         # Test doubles
         # FIXME: Deployment fails for some reason. Maybe bug in CPU? Commenting it out.
-        #self.assertEqual(float(0.1) + float(0.2), float(0.3), "Floating addition failed")
+        # self.assertEqual(float(0.1) + float(0.2), float(0.3), "Floating addition failed")
         self.assertNotEqual(float(1) + float(1), float(3), "Floating Addition failed")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
