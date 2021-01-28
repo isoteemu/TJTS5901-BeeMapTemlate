@@ -119,6 +119,8 @@ dast-fullscan:
       - gl-dast-fullscan-report.md
   when:
     manual
+  only:
+    master
 
 test-stating:
   # Test that staging stage works as
