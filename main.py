@@ -125,7 +125,7 @@ def _setup_azure_logging(logger: logging.Logger, app: Flask, connection_string: 
 
 
 # Setup logging into azure.
-_app_insight_connection = app.config.get("APPLICATIONINSIGHTS_CONNECTION_STRING", "InstrumentationKey=8290acaa-c1f8-4b32-862a-543608df5871;IngestionEndpoint=https://northeurope-0.in.applicationinsights.azure.com/")
+_app_insight_connection = app.config.get("APPLICATIONINSIGHTS_CONNECTION_STRING", False)
 
 if _app_insight_connection:
     _setup_azure_logging(logger, app, _app_insight_connection)
