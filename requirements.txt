@@ -1,6 +1,5 @@
 flask>=1.1
 google-cloud-datastore
-pre-commit
 
 # "testing" packages
 pytest
