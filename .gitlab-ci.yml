@@ -120,7 +120,7 @@ dast-fullscan:
   when:
     manual
   only:
-    master
+    - master
 
 test-stating:
   # Test that staging stage works as
