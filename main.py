@@ -155,4 +155,3 @@ if __name__ == '__main__':
 
     app.run(host=host, port=port) or \
         logger.info(f"Abrupt Flask app stoppage")
-
