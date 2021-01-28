@@ -1,5 +1,4 @@
 import os
-import uuid
 
 from flask import Flask
 from flask import render_template
@@ -18,27 +17,32 @@ datastore_client = datastore.Client()
 def home():
 
     locations = []
-    for latlng in datastore_client.query(kind="HiveLocation").fetch():
+    for latlng in datastore_client.query(kind="Hive").fetch():
         locations.append(
-            {"lat": latlng["LatLng"].latitude, "lon": latlng["LatLng"].longitude}
+            {"lat": latlng["LatLng"]['latitude'], "lon": latlng["LatLng"]['longitude']}
         )
 
     return render_template("mymap.html", hive_locations=locations)
 
 
-@app.route("/save", methods=["POST"])
+@app.route("/save", methods=["GET","POST"])
 def save_to_db():
-    data = request.data.decode()
 
-    kind = "HiveLocation"
-    name = uuid.uuid5("farts", "foo")
-    task_key = datastore_client.key(kind, name)
+    data = request.get_json()
+    print("saved", data,"!")
+    kind = "Hive"
+    #name = data['firstname']
+    task_key = datastore_client.key(kind)
     task = datastore.Entity(key=task_key)
-    task["location"] = data
-    task["bonus"] = "something"
+    task["LatLng"] = {
+                        "latitude": data["latitude"],
+                         "longitude": data["longitude"]}
+    task["Firstname"] = data['firstname']
+    task["Familyname"] = data['familyname']
+    task["email"] = data['email']
 
     datastore_client.put(task)
-
+    return home()
 
 @app.route("/delete", methods=["DELETE"])
 def delete_from_db():
