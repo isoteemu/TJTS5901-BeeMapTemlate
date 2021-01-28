@@ -142,3 +142,5 @@ package-lock.json
 instance_config.py
 .vscode/settings.json
 *.json
+
+translations/*/*.mo
