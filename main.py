@@ -2,8 +2,10 @@ import logging
 import os
 
 from flask import Flask
+from flask import Markup
 from flask import render_template
 from flask import request
+from flask import Response
 from google.cloud import datastore
 from opencensus.ext.azure.log_exporter import AzureLogHandler
 from opencensus.ext.azure.trace_exporter import AzureExporter
@@ -11,6 +13,7 @@ from opencensus.ext.flask.flask_middleware import FlaskMiddleware
 from opencensus.trace import execution_context
 from opencensus.trace.samplers import ProbabilitySampler
 from opencensus.trace.status import Status
+from werkzeug.exceptions import HTTPException
 
 # Set up the most basic logging.
 logger = logging.getLogger(__name__)
@@ -113,7 +116,7 @@ def _setup_azure_logging(logger: logging.Logger, app: Flask, connection_string: 
 
     :see: https://docs.microsoft.com/en-us/azure/azure-monitor/app/opencensus-python
 
-    :param logger: Logging instance to assign azure opencensus stream handler.
+    :param logger: Logging instance to a        ssign azure opencensus stream handler.
     :param app: Flask app instance to assing azure opencensus handler.
     :param connection_string: Azure Application Insight connection string.
     """
@@ -133,6 +136,47 @@ def _setup_azure_logging(logger: logging.Logger, app: Flask, connection_string: 
     )
 
 
+def capture_exceptions(app: Flask):
+    """
+    Register custom exception handler.
+
+    When application falls short by unhandled exception, show custom error message.
+
+    see: https://flask.palletsprojects.com/en/1.1.x/patterns/errorpages/
+    """
+
+    logger.debug("Setting up custom error handler")
+
+    # Add handler for exception, and use decorator to register it.
+    @app.errorhandler(Exception)
+    def handle_internal_server_error(e):
+
+        error_message = f"Server Error: {e!s}"
+
+        # If fancy page fails, setup fallback
+        error_page = Markup.escape(error_message)
+
+        try:
+            logger.exception(error_message, exc_info=e)
+
+            # Collect routes
+            routes = app.url_map.iter_rules()
+            error_page = render_template("error.html", routes=routes, error=error_message)
+        except Exception as e_in_e:
+            # Nothing works and everything sucks.
+            logger.error("Got `Exception` while handling another `Exception`.")
+            logger.exception(e, exc_info=e_in_e)
+
+        # Set default http code
+        status = 500
+
+        if isinstance(e, HTTPException):
+            # HTTP exceptions have own error codes, so use it.
+            status = e.code
+
+        return Response(error_page, status=status)
+
+
 # Setup logging into azure.
 _app_insight_connection = app.config.get("APPLICATIONINSIGHTS_CONNECTION_STRING", False)
 
@@ -141,6 +185,8 @@ if _app_insight_connection:
 else:
     raise RuntimeError("Missing azure application insight key configuration value.")
 
+# Register own error handler
+capture_exceptions(app)
 
 if __name__ == '__main__':
 
