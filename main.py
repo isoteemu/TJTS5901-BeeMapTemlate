@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request, jsonify
 import os
+
+from flask import Flask
+from flask import render_template
+from flask import request
 from google.cloud import datastore
-import time
-import uuid
 import logging
 
 from opencensus.ext.azure.log_exporter import AzureLogHandler
@@ -18,6 +19,9 @@ logging.basicConfig()
 
 logger = logging.getLogger(__name__)
 app = Flask(__name__)
+app.config.from_pyfile("default_config.py")
+# silent param allows missing config files.
+app.config.from_pyfile("instance_config.py", silent=True)
 
 datastore_client = datastore.Client()
 
@@ -33,12 +37,12 @@ def home():
     # Name should be descriptive
     with tracer.span(name="datastore.query()") as span:
 
-        kind = "HiveLocation"
+        kind = "Hive"
+        locations = []
         for latlng in datastore_client.query(kind=kind).fetch():
-            locations.append({
-                "lat": latlng['LatLng'].latitude,
-                "lon": latlng['LatLng'].longitude
-            })
+            locations.append(
+                {"lat": latlng["LatLng"]['latitude'], "lon": latlng["LatLng"]['longitude']}
+            )
 
         location_count = len(locations)
         logger.debug("Found %d HiveLocation entries for map." % location_count)
@@ -56,32 +60,38 @@ def home():
             # Not found
             span.status = Status(5, "Zero locations found.")
 
-    return render_template('mymap.html', hive_locations=locations)
+    return render_template("mymap.html", hive_locations=locations)
 
 
-@app.route('/save', methods=['POST'])
+@app.route("/save", methods=["GET","POST"])
 def save_to_db():
-    data = request.data.decode()
 
-
-    kind = 'HiveLocation'
-    name = uuid.uuid5("farts", "foo")
-    task_key = datastore_client.key(kind, name)
+    data = request.get_json()
+    print("saved", data,"!")
+    kind = "Hive"
+    #name = data['firstname']
+    task_key = datastore_client.key(kind)
     task = datastore.Entity(key=task_key)
-    task['location'] = data
-    task['bonus'] = 'something'
+    task["LatLng"] = {
+                        "latitude": data["latitude"],
+                         "longitude": data["longitude"]}
+    task["Firstname"] = data['firstname']
+    task["Familyname"] = data['familyname']
+    task["email"] = data['email']
 
     datastore_client.put(task)
+    return home()
 
 
-@app.route('/delete', methods=['DELETE'])
+@app.route("/delete", methods=["DELETE"])
 def delete_from_db():
     pass
 
-@app.route('/update', methods=['GET'])
+
+@app.route("/update", methods=["GET"])
 def load_db():
-    query = datastore_client.query(kind='HiveLocation')
-    query.order = ['location']
+    query = datastore_client.query(kind="HiveLocation")
+    query.order = ["location"]
     data = list(query.fetch())
     print(data)
 

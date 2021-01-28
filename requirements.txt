@@ -2,3 +2,7 @@ flask>=1.1
 google-cloud-datastore
 opencensus-ext-azure
 opencensus-ext-flask
+
+# "testing" packages
+pytest
+requests

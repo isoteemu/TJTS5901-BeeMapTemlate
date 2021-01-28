@@ -5,6 +5,9 @@ include:
   - template: Security/SAST.gitlab-ci.yml
 
 variables:
+  # Our staging website address. Could - and maybe should - be defined in gitlab variables.
+  WEBSITE_STAGING: https://staging-dot-agile-team-299406.ew.r.appspot.com
+
   # When using dind service, we need to instruct docker to talk with
   # the daemon started inside of the service. The daemon is available
   # with a network connection instead of the default
@@ -31,6 +34,8 @@ variables:
 
 stages:
   - test
+  - staging
+  - test-staging
   - deploy
 
 #build-job:
@@ -45,14 +50,106 @@ stages:
 
 python-tests:
   stage: test
+  image: python:3
+  variables:
+    PRE_COMMIT_HOME: ${CI_PROJECT_DIR}/.cache/pre-commit
+  cache:
+    paths:
+      - ${PRE_COMMIT_HOME}
   script:
     - export PYTHONPATH=.
-    - export FLASK_APP=web
-    - apk update -q
-    - apk add python3 python3-dev py3-pip
-    - pip3 install Flask pytest pytest-cov
-    - pytest tests --cov --cov-report term --cov-report html
+    - export FLASK_APP=main
+    - pip3 install pytest pytest-cov pre-commit
+    - pip3 install -r requirements.txt
+    - pytest --verbose tests --cov --cov-report term --cov-report html -m "not staging"
+    - pre-commit install
+    - pre-commit run --all-files
+  artifacts:
+    when: always
+    paths:
+      - htmlcov
 
+
+dast-baseline:
+  stage: test-staging
+  image: owasp/zap2docker-stable
+
+  # https://www.zaproxy.org/docs/docker/baseline-scan/
+  # -t target         target URL including the protocol, eg https://www.example.com
+  # -r report_html    file to write the full ZAP HTML report
+  # -w report_md      file to write the full ZAP Wiki (Markdown) report
+  # -x report_xml     file to write the full ZAP XML report
+  # -J report_json    file to write the full ZAP JSON document
+  # -j                use the Ajax spider in addition to the traditional one  
+  script:
+    - mkdir /zap/wrk/
+    - /zap/zap-baseline.py -J gl-dast-report.json -j -r gl-dast-report.html -w gl-dast-report.md -t $WEBSITE_STAGING || true 
+    - cp /zap/wrk/gl-dast-report.json .
+    - cp /zap/wrk/gl-dast-report.html .
+    - cp /zap/wrk/gl-dast-report.md .
+  artifacts:
+    paths: 
+      - gl-dast-report.json
+      - gl-dast-report.html
+      - gl-dast-report.md
+  only:
+    - master
+
+dast-fullscan:
+  stage: test-staging
+  image: owasp/zap2docker-stable
+
+  # https://www.zaproxy.org/docs/docker/baseline-scan/
+  # -t target         target URL including the protocol, eg https://www.example.com
+  # -r report_html    file to write the full ZAP HTML report
+  # -w report_md      file to write the full ZAP Wiki (Markdown) report
+  # -x report_xml     file to write the full ZAP XML report
+  # -J report_json    file to write the full ZAP JSON document
+  # -j                use the Ajax spider in addition to the traditional one  
+  script:
+    - mkdir /zap/wrk/
+    - /zap/zap-full-scan.py -J gl-dast-fullscan-report.json -j -r gl-dast-fullscan-report.html -w gl-dast-fullscan-report.md -t $WEBSITE_STAGING || true 
+    - cp /zap/wrk/gl-dast-fullscan-report.json .
+    - cp /zap/wrk/gl-dast-fullscan-report.html .
+    - cp /zap/wrk/gl-dast-fullscan-report.md .
+  artifacts:
+    paths: 
+      - gl-dast-fullscan-report.json
+      - gl-dast-fullscan-report.html
+      - gl-dast-fullscan-report.md
+  when:
+    manual
+  only:
+    - master
+
+test-stating:
+  # Test that staging stage works as
+  stage: test-staging
+  image: python:3
+  script:
+    - pip install -r requirements.txt
+    - pip install pytest
+    # Run tests that has been marked by "@pytest.mark.staging"
+    - pytest --verbose tests -m "staging"
+
+  only:
+    - master
+
+staging:
+  # Staging is same as deployment, but uses app-staging.yaml to deploy.
+  stage: staging
+  environment:
+    name: staging
+  image: google/cloud-sdk:alpine
+  script:
+  - gcloud auth activate-service-account --key-file $GOOGLE_APPLICATION_CREDENTIALS
+  - cp $GOOGLE_APPLICATION_CREDENTIALS appcredentials.json
+  # Copy config file
+  - mv $INSTANCE_CONFIG_PRODUCTION instance_config.py
+  - gcloud --quiet --project $PROJECT_ID app deploy app-staging.yaml
+
+  only:
+    - master
 
 deploy:
   stage: deploy
@@ -60,12 +157,11 @@ deploy:
     name: production
   image: google/cloud-sdk:alpine
   script:
-  - echo $SERVICE_ACCOUNT > /tmp/$CI_PIPELINE_ID.json
-  - echo $GOOGLE_APPLICATION_CREDENTIALS > appcredentials.json
-  - gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
+  - gcloud auth activate-service-account --key-file $GOOGLE_APPLICATION_CREDENTIALS
+  - cp $GOOGLE_APPLICATION_CREDENTIALS appcredentials.json
+  # Copy config file
+  - mv $INSTANCE_CONFIG_PRODUCTION instance_config.py
   - gcloud --quiet --project $PROJECT_ID app deploy app.yaml
-  - rm /tmp/$CI_PIPELINE_ID.json
 
   only:
     - master
-  
