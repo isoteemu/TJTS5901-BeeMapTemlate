@@ -1,16 +1,15 @@
+import logging
 import os
 
 from flask import Flask
 from flask import render_template
 from flask import request
 from google.cloud import datastore
-import logging
-
 from opencensus.ext.azure.log_exporter import AzureLogHandler
 from opencensus.ext.azure.trace_exporter import AzureExporter
 from opencensus.ext.flask.flask_middleware import FlaskMiddleware
-from opencensus.trace.samplers import ProbabilitySampler
 from opencensus.trace import execution_context
+from opencensus.trace.samplers import ProbabilitySampler
 from opencensus.trace.status import Status
 
 # Set up the most basic logging.
