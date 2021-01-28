@@ -17,9 +17,9 @@ datastore_client = datastore.Client()
 def home():
 
     locations = []
-    for latlng in datastore_client.query(kind="HiveLocation").fetch():
+    for latlng in datastore_client.query(kind="Hive").fetch():
         locations.append(
-            {"lat": latlng["LatLng"].latitude, "lon": latlng["LatLng"].longitude}
+            {"lat": latlng["LatLng"]['latitude'], "lon": latlng["LatLng"]['longitude']}
         )
 
     return render_template("mymap.html", hive_locations=locations)
@@ -29,20 +29,20 @@ def home():
 def save_to_db():
 
     data = request.get_json()
-    print("saved", data.get("latitude"),"!")
-    kind = "HiveLocation"
-    name = "nimi"
-    task_key = datastore_client.key(kind, name)
+    print("saved", data,"!")
+    kind = "Hive"
+    #name = data['firstname']
+    task_key = datastore_client.key(kind)
     task = datastore.Entity(key=task_key)
     task["LatLng"] = {
                         "latitude": data["latitude"],
                          "longitude": data["longitude"]}
-    #task["Firstname"] = data.firstname
-    #task["Familyname"] = data.familyname
-    #task["email"] = data.email
+    task["Firstname"] = data['firstname']
+    task["Familyname"] = data['familyname']
+    task["email"] = data['email']
 
     datastore_client.put(task)
-
+    return home()
 
 @app.route("/delete", methods=["DELETE"])
 def delete_from_db():

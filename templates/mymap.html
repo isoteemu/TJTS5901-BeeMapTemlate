@@ -32,10 +32,9 @@
   <div id="map"></div>
   <script>
 
-    //init vars
+    //init global vars
     var latitude = 1;
     var longitude = 1;
-
     // initialize Leaflet
     var map = L.map('map').setView({ lon: 25.72088, lat: 62.24147 }, 15.5);
 
@@ -62,8 +61,10 @@
       let firstname = document.getElementById("firstname").value;
       let familyname = document.getElementById("familyname").value;
       let email = document.getElementById("email").value;
-      console.log(latitude)
       var data = {
+        "firstname": firstname,
+        "familyname": familyname,
+        "email": email,
         "latitude": latitude,
         "longitude": longitude
       };
@@ -86,12 +87,12 @@
       //Set popup lat lng where clicked
       markerpopup.setLatLng(e.latlng);
       //lat lng where clicked to string
-      let location = e.latlng
+      let location = e.latlng;
       let lat = location.lat;
       let lng = location.lng;
+      // save coordinates to global variable
       latitude = lat;
       longitude = lng;
-      
       //Set popup content
       markerpopup.setContent('<form class="popup">\
         <fieldset >\
