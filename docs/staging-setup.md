@@ -4,7 +4,7 @@
 
 Reference implementation: f5a21c32
 
-[[__toc__]]
+[[_TOC_]]
 
 ## Quickstart
 
