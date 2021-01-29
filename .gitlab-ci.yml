@@ -8,6 +8,9 @@ variables:
   # Our staging website address. Could - and maybe should - be defined in gitlab variables.
   WEBSITE_STAGING: https://staging-dot-agile-team-299406.ew.r.appspot.com
 
+  # Store pip packages into cache directory, so they aren't fetched every build stage
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
   # When using dind service, we need to instruct docker to talk with
   # the daemon started inside of the service. The daemon is available
   # with a network connection instead of the default
@@ -32,21 +35,23 @@ variables:
   DOCKER_TLS_VERIFY: 1
   DOCKER_CERT_PATH: "$DOCKER_TLS_CERTDIR/client"
 
+cache:
+  paths:
+    # Cache pip packages. Depends on $PIP_CACHE_DIR pointing here.
+    - .cache/pip
+    # Cache translations
+    - translations
+
 stages:
   - test
   - staging
   - test-staging
   - deploy
 
-#build-job:
-#  stage: build
-#  services:
-#  - docker:19.03.10-dind
-#  script:
-#    # https://gitlab.com/gitlab-org/gitlab-runner/-/issues/27384
-#    - sleep 5 
-#    - docker info
-#    - echo "This builds something"
+before_script:
+  - export PYTHONPATH=.
+  - pip3 install -r requirements.txt
+  - pybabel compile -d translations
 
 python-tests:
   stage: test
@@ -57,10 +62,8 @@ python-tests:
     paths:
       - ${PRE_COMMIT_HOME}
   script:
-    - export PYTHONPATH=.
     - export FLASK_APP=main
     - pip3 install pytest pytest-cov pre-commit
-    - pip3 install -r requirements.txt
     - pytest --verbose tests --cov --cov-report term --cov-report html -m "not staging"
     #- pre-commit install
     #- pre-commit run --all-files
@@ -68,7 +71,6 @@ python-tests:
     when: always
     paths:
       - htmlcov
-
 
 dast-baseline:
   stage: test-staging
@@ -119,16 +121,13 @@ dast-fullscan:
       - gl-dast-fullscan-report.md
   when:
     manual
-  only:
-    - master
 
 test-stating:
   # Test that staging stage works as
   stage: test-staging
   image: python:3
   script:
-    - pip install -r requirements.txt
-    - pip install pytest
+    - pip3 install pytest
     # Run tests that has been marked by "@pytest.mark.staging"
     - pytest --verbose tests -m "staging"
 

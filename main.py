@@ -6,6 +6,7 @@ from flask import Markup
 from flask import render_template
 from flask import request
 from flask import Response
+from flask_babel import Babel
 from google.cloud import datastore
 from opencensus.ext.azure.log_exporter import AzureLogHandler
 from opencensus.ext.azure.trace_exporter import AzureExporter
@@ -26,6 +27,9 @@ app.config.from_pyfile("default_config.py")
 app.config.from_pyfile("instance_config.py", silent=True)
 
 datastore_client = datastore.Client()
+
+# Enable localization
+Babel(app)
 
 
 @app.route('/')
@@ -183,7 +187,7 @@ _app_insight_connection = app.config.get("APPLICATIONINSIGHTS_CONNECTION_STRING"
 if _app_insight_connection:
     _setup_azure_logging(logger, app, _app_insight_connection)
 else:
-    raise RuntimeError("Missing azure application insight key configuration value.")
+    logger.warn("Missing azure application insight key configuration value.")
 
 # Register own error handler
 capture_exceptions(app)

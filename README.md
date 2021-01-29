@@ -25,3 +25,27 @@ pre-commit will also modify the files. Modifications need to be commited separat
 `pre-commit install`
 
 `pre-commit run --all-files`
+
+## Extracting and compiling translations
+
+<https://flask-babel.tkte.ch/#translating-applications>
+
+To extract translations from code and templates:
+
+`pybabel extract -F babel.cfg -o messages.pot .`
+
+Merge existing translations or create new. 
+
+- Merge into existing translation:
+
+    `pybabel update -i messages.pot -d translations`
+
+- Generate new finnish translation file:
+
+    `pybabel init -i messages.pot -d translations -l fi`
+
+Translate generated file `translations/fi/LC_MESSAGES/messages.po` using tooling of your choosing.
+
+Compile translations into gettex format:
+
+`pybabel compile -d translations`
