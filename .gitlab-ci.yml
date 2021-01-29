@@ -50,7 +50,7 @@ stages:
 
 before_script:
   - export PYTHONPATH=.
-  - pip install -r requirements.txt
+  - pip3 install -r requirements.txt
   - pybabel compile -d translations
 
 python-tests:
@@ -63,7 +63,7 @@ python-tests:
       - ${PRE_COMMIT_HOME}
   script:
     - export FLASK_APP=main
-    - pip install pytest pytest-cov pre-commit
+    - pip3 install pytest pytest-cov pre-commit
     - pytest --verbose tests --cov --cov-report term --cov-report html -m "not staging"
     - pre-commit install
     - pre-commit run --all-files
@@ -127,7 +127,7 @@ test-stating:
   stage: test-staging
   image: python:3
   script:
-    - pip install pytest
+    - pip3 install pytest
     # Run tests that has been marked by "@pytest.mark.staging"
     - pytest --verbose tests -m "staging"
 
