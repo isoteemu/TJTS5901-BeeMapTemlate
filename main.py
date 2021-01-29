@@ -187,7 +187,7 @@ _app_insight_connection = app.config.get("APPLICATIONINSIGHTS_CONNECTION_STRING"
 if _app_insight_connection:
     _setup_azure_logging(logger, app, _app_insight_connection)
 else:
-    raise RuntimeError("Missing azure application insight key configuration value.")
+    logger.warn("Missing azure application insight key configuration value.")
 
 # Register own error handler
 capture_exceptions(app)
