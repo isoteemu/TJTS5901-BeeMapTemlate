@@ -65,8 +65,8 @@ python-tests:
     - export FLASK_APP=main
     - pip3 install pytest pytest-cov pre-commit
     - pytest --verbose tests --cov --cov-report term --cov-report html -m "not staging"
-    - pre-commit install
-    - pre-commit run --all-files
+    #- pre-commit install
+    #- pre-commit run --all-files
   artifacts:
     when: always
     paths:
