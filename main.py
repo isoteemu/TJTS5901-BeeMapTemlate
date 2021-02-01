@@ -1,6 +1,7 @@
 import os
 
 from flask import Flask
+from flask import jsonify
 from flask import render_template
 from flask import request
 from google.cloud import datastore
@@ -19,30 +20,44 @@ def home():
     locations = []
     for latlng in datastore_client.query(kind="Hive").fetch():
         locations.append(
-            {"lat": latlng["LatLng"]['latitude'], "lon": latlng["LatLng"]['longitude']}
+            {"lat": latlng["LatLng"]['latitude'],
+                "lon": latlng["LatLng"]['longitude']}
         )
-
+    print(locations)
     return render_template("mymap.html", hive_locations=locations)
 
 
-@app.route("/save", methods=["GET","POST"])
+@app.route("/save", methods=["GET", "POST"])
 def save_to_db():
 
     data = request.get_json()
-    print("saved", data,"!")
+    print("saved", data, "!")
     kind = "Hive"
     #name = data['firstname']
     task_key = datastore_client.key(kind)
     task = datastore.Entity(key=task_key)
     task["LatLng"] = {
-                        "latitude": data["latitude"],
-                         "longitude": data["longitude"]}
+        "latitude": data["latitude"],
+        "longitude": data["longitude"]}
     task["Firstname"] = data['firstname']
     task["Familyname"] = data['familyname']
     task["email"] = data['email']
 
     datastore_client.put(task)
     return home()
+
+
+@app.route("/admin", methods=["GET", "POST", "DELETE"])
+def get_admin_page():
+   locations = []
+   for latlng in datastore_client.query(kind="Hive").fetch():
+        locations.append(
+            {"lat": latlng["LatLng"]['latitude'],
+                "lon": latlng["LatLng"]['longitude']}
+        )
+
+        return render_template("admin.html", hive_locations=locations)
+
 
 @app.route("/delete", methods=["DELETE"])
 def delete_from_db():

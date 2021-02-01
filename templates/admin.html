@@ -1,0 +1,75 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+ 
+</head>
+
+<body>
+  <div>
+  <h1>Admin page</h1>
+  </div>
+  <table>
+    <tr>
+    {% for item in hive_locations %}
+      {{item}}
+    {% endfor %}
+    <tr>
+  </table>
+  <div class="col-lg-12" id="list-puntate">
+  <ul>
+
+    </ul>                              
+</div>
+  <script>
+ ul = document.createElement('ul');
+    // show a marker on the map
+    {% for item in hive_locations %}
+    var listDiv = document.getElementById('list-puntate');
+    let li = document.createElement('li');
+    li.innerHTML += {{item | tojson}};
+    listDiv.appendChild(li);
+    var btn1 = document.createElement("BUTTON");
+    btn1.innerHTML = "DELETE"; 
+    listDiv.appendChild(btn1)
+    var btn2 = document.createElement("BUTTON");
+    btn2.innerHTML = "EDIT"; 
+    listDiv.appendChild(btn2)
+      
+    {% endfor %}
+    
+    // Function saves beehive's location to database and to local map
+    function updatePopup() {
+      //Data that we want to send to server and save as a beehive location
+      let firstname = document.getElementById("firstname").value;
+      let familyname = document.getElementById("familyname").value;
+      let email = document.getElementById("email").value;
+      var data = {
+        "firstname": firstname,
+        "familyname": familyname,
+        "email": email,
+        "latitude": latitude,
+        "longitude": longitude
+      };
+      
+      //HTTP request to server
+      var request = new XMLHttpRequest();
+      request.open('POST', '/save', true);
+      request.setRequestHeader('Content-Type', 'application/*+json; ');
+      request.send(JSON.stringify(data));
+    }
+    
+    // Functin to delete a beehive in the map
+    /* function deletePopup() {
+      map.removeLayer(drawnItems)
+
+      var request = new XMLHttpRequest();
+      request.open('DELETE', '/delete', true);
+      request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+      request.send(data);
+      alert('Marker was deleted')
+    } */
+
+  </script>
+</body>
+</html>
