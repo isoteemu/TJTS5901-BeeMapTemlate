@@ -168,7 +168,7 @@ deploy:
   - gcloud auth activate-service-account --key-file $GOOGLE_APPLICATION_CREDENTIALS
   - cp $GOOGLE_APPLICATION_CREDENTIALS appcredentials.json
   # Copy config file
-  - mv $INSTANCE_CONFIG_PRODUCTION instance_config.py
+  - cp $INSTANCE_CONFIG_PRODUCTION instance_config.py
   - gcloud --quiet --project $PROJECT_ID app deploy app.yaml
 
   only:
