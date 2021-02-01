@@ -129,6 +129,7 @@ test-stating:
   stage: test-staging
   image: python:3
   script:
+    - pip3 install -r requirements.txt
     - pip3 install pytest
     # Run tests that has been marked by "@pytest.mark.staging"
     - pytest --verbose tests -m "staging"
