@@ -142,8 +142,11 @@ staging:
   stage: staging
   environment:
     name: staging
-  image: google/cloud-sdk:alpine
+  image: google/cloud-sdk
   script:
+  - pip3 install flask-babel --prefer-binary
+  - pybabel compile -d translations
+   
   - gcloud auth activate-service-account --key-file $GOOGLE_APPLICATION_CREDENTIALS
   - cp $GOOGLE_APPLICATION_CREDENTIALS appcredentials.json
   # Copy config file
@@ -157,8 +160,11 @@ deploy:
   stage: deploy
   environment:
     name: production
-  image: google/cloud-sdk:alpine
+  image: google/cloud-sdk
   script:
+  - pip3 install flask-babel --prefer-binary
+  - pybabel compile -d translations
+
   - gcloud auth activate-service-account --key-file $GOOGLE_APPLICATION_CREDENTIALS
   - cp $GOOGLE_APPLICATION_CREDENTIALS appcredentials.json
   # Copy config file
