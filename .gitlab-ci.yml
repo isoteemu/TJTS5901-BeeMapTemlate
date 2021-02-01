@@ -62,10 +62,10 @@ python-tests:
   script:
     - export PYTHONPATH=.
     - export FLASK_APP=main
-    - pip3 install -r requirements.txt --prefer-binary
-    - pybabel compile -d translations
-
+    - python3 -m pip install --upgrade pip
     - pip3 install pytest pytest-cov pre-commit
+    - pip3 install -r requirements.txt
+    - pybabel compile -d translations
     - pytest --verbose tests --cov --cov-report term --cov-report html -m "not staging"
     #- pre-commit install
     #- pre-commit run --all-files
@@ -129,10 +129,8 @@ test-stating:
   stage: test-staging
   image: python:3
   script:
-    - pip3 install -r requirements.txt --prefer-binary
+    - pip3 install -r requirements.txt
     - pip3 install pytest
-    - pybabel compile -d translations
-
     # Run tests that has been marked by "@pytest.mark.staging"
     - pytest --verbose tests -m "staging"
 
@@ -144,11 +142,8 @@ staging:
   stage: staging
   environment:
     name: staging
-  image: google/cloud-sdk
+  image: google/cloud-sdk:alpine
   script:
-  - pip3 install -r requirements.txt --prefer-binary
-  - pybabel compile -d translations
-   
   - gcloud auth activate-service-account --key-file $GOOGLE_APPLICATION_CREDENTIALS
   - cp $GOOGLE_APPLICATION_CREDENTIALS appcredentials.json
   # Copy config file
@@ -162,11 +157,8 @@ deploy:
   stage: deploy
   environment:
     name: production
-  image: google/cloud-sdk
+  image: google/cloud-sdk:alpine
   script:
-  - pip3 install -r requirements.txt --prefer-binary
-  - pybabel compile -d translations
-
   - gcloud auth activate-service-account --key-file $GOOGLE_APPLICATION_CREDENTIALS
   - cp $GOOGLE_APPLICATION_CREDENTIALS appcredentials.json
   # Copy config file
