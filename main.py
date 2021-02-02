@@ -8,9 +8,15 @@ from flask import request
 from flask import Response
 from flask_babel import Babel
 from google.cloud import datastore
+from opencensus.ext.azure import metrics_exporter
 from opencensus.ext.azure.log_exporter import AzureLogHandler
 from opencensus.ext.azure.trace_exporter import AzureExporter
 from opencensus.ext.flask.flask_middleware import FlaskMiddleware
+from opencensus.stats import aggregation as aggregation_module
+from opencensus.stats import measure as measure_module
+from opencensus.stats import stats as stats_module
+from opencensus.stats import view as view_module
+from opencensus.tags import tag_map as tag_map_module
 from opencensus.trace import execution_context
 from opencensus.trace.samplers import ProbabilitySampler
 from opencensus.trace.status import Status
@@ -31,6 +37,22 @@ datastore_client = datastore.Client()
 # Enable localization
 Babel(app)
 
+# Metrics
+stats = stats_module.stats
+view_manager = stats.view_manager
+stats_recorder = stats.stats_recorder
+
+marker_measure = measure_module.MeasureInt("markers",
+                                           "number of markers",
+                                           "markers")
+marker_view = view_module.View("marker view",
+                               "number of markers",
+                               [],
+                               marker_measure,
+                               aggregation_module.CountAggregation())
+view_manager.register_view(marker_view)
+mmap = stats_recorder.new_measurement_map()
+tmap = tag_map_module.TagMap()
 
 @app.route('/')
 def home():
@@ -45,12 +67,19 @@ def home():
 
         kind = "Hive"
         locations = []
+
         for latlng in datastore_client.query(kind=kind).fetch():
             locations.append(
                 {"lat": latlng["LatLng"]['latitude'], "lon": latlng["LatLng"]['longitude']}
             )
 
         location_count = len(locations)
+
+        # metrics
+        mmap.measure_int_put(marker_measure, location_count)
+        mmap.record(tmap)
+
+        # logging
         logger.debug("Found %d HiveLocation entries for map." % location_count)
 
         # Add info into our trace
@@ -139,6 +168,8 @@ def _setup_azure_logging(logger: logging.Logger, app: Flask, connection_string: 
         sampler=ProbabilitySampler(rate=1.0),
     )
 
+    metrics_export = metrics_exporter.new_metrics_exporter(connection_string=connection_string)
+    view_manager.register_exporter(metrics_export)
 
 def capture_exceptions(app: Flask):
     """
