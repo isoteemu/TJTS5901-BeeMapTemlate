@@ -1,7 +1,11 @@
+{#
+  From jinja2 documentation: "A _() function is added as an alias to the gettext function."
+  https://jinja.palletsprojects.com/en/2.11.x/extensions/#i18n-extension
+#}
 <!DOCTYPE HTML>
 <html>
-
 <head>
+  <title>{{_("Best Bee Friends Mapping Application")}}</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
     integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
     crossorigin="" />
@@ -15,7 +19,11 @@
       padding: 0;
       margin: 0;
     }
-
+    .popup {
+      color: blue;
+      height: 200px;
+      width: 200px;
+    }
     #map {
       /* configure the size of the map */
       width: 100%;
@@ -27,13 +35,17 @@
 <body>
   <div id="map"></div>
   <script>
+
+    //init global vars
+    var latitude = 1;
+    var longitude = 1;
     // initialize Leaflet
     var map = L.map('map').setView({ lon: 25.72088, lat: 62.24147 }, 15.5);
 
     // add the OpenStreetMap tiles
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
-      attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+      attribution: '&copy; <a href="https://openstreetmap.org/copyright">{{ _("OpenStreetMap contributors") }}</a>'
     }).addTo(map);
 
     // show the scale bar on the lower left corner
@@ -50,37 +62,56 @@
     // Function saves beehive's location to database and to local map
     function savePopup() {
       //Data that we want to send to server and save as a beehive location
-      var data = document.getElementById("edit").value;
-
+      let firstname = document.getElementById("firstname").value;
+      let familyname = document.getElementById("familyname").value;
+      let email = document.getElementById("email").value;
+      var data = {
+        "firstname": firstname,
+        "familyname": familyname,
+        "email": email,
+        "latitude": latitude,
+        "longitude": longitude
+      };
+      
       //HTTP request to server
       var request = new XMLHttpRequest();
       request.open('POST', '/save', true);
-      request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-      request.send(data);
-      alert(data + ' was saved to database!')
-      saveValue()
+      request.setRequestHeader('Content-Type', 'application/*+json; ');
+      request.send(JSON.stringify(data));
     }
-
-    function saveValue() {
-      document.getElementById("loc").innerHTML = document.getElementById("edit").value
-  
-    }
-
     //Create GeoJSON layer for user generated data
     var drawnItems = new L.geoJson();
     //Add GeoJSON layer to map
     map.addLayer(drawnItems);
 
-    // Leaflet draw event
+    // Leaflet draw eventS
     map.on('dblclick', function (e) {
       var marker = L.marker(e.latlng).addTo(map);
       var markerpopup = L.popup({});
       //Set popup lat lng where clicked
       markerpopup.setLatLng(e.latlng);
       //lat lng where clicked to string
-      var placement = e.latlng.toString()
+      let location = e.latlng;
+      let lat = location.lat;
+      let lng = location.lng;
+      // save coordinates to global variable
+      latitude = lat;
+      longitude = lng;
       //Set popup content
-      markerpopup.setContent('<form><label style="font-weight: bold;">Beehive location: </label><label id="loc">Unknown</label><br /><label style="font-weight: bold;">Set a new location: </label><input id="edit" name="edit" onvaluechange="saveValue()" value="Type here"/></form><button onclick="savePopup()">Save</button>');
+      markerpopup.setContent('<form class="popup">\
+        <fieldset >\
+        <label for="firstname"> {{ _("Your Firstname") }}: \
+        </label>\
+        <input type="text" id="firstname" ></br>\
+        \
+        <label> {{ _("Your Familyname") }}: \
+        </label>\
+        <input type="text" id="familyname" ></br>\
+        \
+        <label for "email"> {{ _("Your email") }} \
+        </label>\
+        <input type= "email" id="email"></br>\
+        <button onclick="savePopup()">{{ _("Save") }}</button></fieldset></form>');
       //Bind marker popup
       marker.bindPopup(markerpopup);
       //Add marker to geojson layer
