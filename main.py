@@ -49,14 +49,17 @@ def save_to_db():
 
 @app.route("/admin", methods=["GET", "POST", "DELETE"])
 def get_admin_page():
-   locations = []
-   for latlng in datastore_client.query(kind="Hive").fetch():
+  locations = []
+  for item in datastore_client.query(kind="Hive").fetch():
         locations.append(
-            {"lat": latlng["LatLng"]['latitude'],
-                "lon": latlng["LatLng"]['longitude']}
+            {"familyname": item['Familyname'],
+            "firstname": item['Firstname'],
+            "Email": item['email'],
+            "lat": item["LatLng"]['latitude'],
+            "lon": item["LatLng"]['longitude']}
         )
-
-        return render_template("admin.html", hive_locations=locations)
+  print(locations)
+  return render_template("admin.html", hive_locations=locations)
 
 
 @app.route("/delete", methods=["DELETE"])

@@ -12,7 +12,11 @@
   <table>
     <tr>
     {% for item in hive_locations %}
-      {{item}}
+     <tr> {{item}} </tr> 
+      <button>EDIT</button>
+      <button>DELETE</button>
+      <br />
+      <br />
     {% endfor %}
     <tr>
   </table>
@@ -22,22 +26,6 @@
     </ul>                              
 </div>
   <script>
- ul = document.createElement('ul');
-    // show a marker on the map
-    {% for item in hive_locations %}
-    var listDiv = document.getElementById('list-puntate');
-    let li = document.createElement('li');
-    li.innerHTML += {{item | tojson}};
-    listDiv.appendChild(li);
-    var btn1 = document.createElement("BUTTON");
-    btn1.innerHTML = "DELETE"; 
-    listDiv.appendChild(btn1)
-    var btn2 = document.createElement("BUTTON");
-    btn2.innerHTML = "EDIT"; 
-    listDiv.appendChild(btn2)
-      
-    {% endfor %}
-    
     // Function saves beehive's location to database and to local map
     function updatePopup() {
       //Data that we want to send to server and save as a beehive location
