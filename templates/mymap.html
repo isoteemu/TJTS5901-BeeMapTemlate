@@ -55,7 +55,9 @@
        .addTo(map);
      
     var newPopup = L.popup({});
-    newPopup.setContent("tähän itemin tiedot")
+     var list = '<ul>'
+     list += '<li>'+ {{ item|list|tojson }}  + '<button>EDIT</button>' + '<button>DELETE</button>' + '</li>'
+    newPopup.setContent(list)
 
       
     {% endfor %}

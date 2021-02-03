@@ -1,7 +1,6 @@
 import os
 
 from flask import Flask
-from flask import jsonify
 from flask import render_template
 from flask import request
 from google.cloud import datastore
@@ -18,10 +17,13 @@ datastore_client = datastore.Client()
 def home():
 
     locations = []
-    for latlng in datastore_client.query(kind="Hive").fetch():
+    for item in datastore_client.query(kind="Hive").fetch():
         locations.append(
-            {"lat": latlng["LatLng"]['latitude'],
-                "lon": latlng["LatLng"]['longitude']}
+             {"familyname": item['Familyname'],
+            "firstname": item['Firstname'],
+            "Email": item['email'],
+            "lat": item["LatLng"]['latitude'],
+            "lon": item["LatLng"]['longitude']}
         )
     print(locations)
     return render_template("mymap.html", hive_locations=locations)
@@ -64,7 +66,7 @@ def get_admin_page():
 
 @app.route("/delete", methods=["DELETE"])
 def delete_from_db():
-    pass
+    print("delete toimii!")
 
 
 @app.route("/update", methods=["GET"])

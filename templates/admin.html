@@ -1,32 +1,71 @@
 <!DOCTYPE HTML>
 <html>
-
 <head>
- 
+   <meta name="google-signin-scope" content="profile email">
+    <meta name="google-signin-client_id" content="21335086073-o7piectf19lpjg2lfji50uoleeoj50be.apps.googleusercontent.com">
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
 </head>
-
 <body>
   <div>
+  <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
+    <script>
+      function onSignIn(googleUser) {
+        // Useful data for your client-side scripts:
+        var profile = googleUser.getBasicProfile();
+        console.log("ID: " + profile.getId()); // Don't send this directly to your server!
+        console.log('Full Name: ' + profile.getName());
+        console.log('Given Name: ' + profile.getGivenName());
+        console.log('Family Name: ' + profile.getFamilyName());
+        console.log("Image URL: " + profile.getImageUrl());
+        console.log("Email: " + profile.getEmail());
+
+        // The ID token you need to pass to your backend:
+        var id_token = googleUser.getAuthResponse().id_token;
+        console.log("ID Token: " + id_token);
+
+        showItems()
+      }
+
+       // Function shows all hive locations and their info
+    function showItems() {
+      var listItems = '<ul>'
+      {% for item in hive_locations %}
+        listItems += '<li>'+ {{ item.firstname|tojson}} + " " +{{item.familyname|tojson}} + 
+        " "+ {{item.Email|tojson }}+ " lat: " + {{item.lat|tojson }}+ " lon: " + {{item.lon|tojson }} 
+         + " " + '<button id="edit">EDIT</button>' + " " +'<button id="del" onCLick=deleteMarker()>DELETE</button>' + '</li>' + '<br/>';
+    {% endfor %}
+
+      listItems += '</ul>';
+      document.getElementById("hiveContainer").innerHTML = listItems;
+    }
+
+   /* // Functin to delete a beehive in the map
+     function deleteMarker() {
+      var data = 
+      var request = new XMLHttpRequest();
+      request.open('DELETE', '/delete', true);
+      request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+      request.send(data);
+      alert('Marker was deleted')
+    }*/ 
+
+    </script>
+    <a href="#" onclick="signOut();">Sign out</a>
+<script>
+  function signOut() {
+    var auth2 = gapi.auth2.getAuthInstance();
+    auth2.signOut().then(function () {
+      console.log('User signed out.');
+    });
+    hiveContainer.style.display = 'none'; 
+  }
+</script>
   <h1>Admin page</h1>
   </div>
-  <table>
-    <tr>
-    {% for item in hive_locations %}
-     <tr> {{item}} </tr> 
-      <button>EDIT</button>
-      <button>DELETE</button>
-      <br />
-      <br />
-    {% endfor %}
-    <tr>
-  </table>
-  <div class="col-lg-12" id="list-puntate">
-  <ul>
-
-    </ul>                              
-</div>
+  <div id="hiveContainer"></div>
   <script>
-    // Function saves beehive's location to database and to local map
+   
+
     function updatePopup() {
       //Data that we want to send to server and save as a beehive location
       let firstname = document.getElementById("firstname").value;
@@ -46,18 +85,7 @@
       request.setRequestHeader('Content-Type', 'application/*+json; ');
       request.send(JSON.stringify(data));
     }
-    
-    // Functin to delete a beehive in the map
-    /* function deletePopup() {
-      map.removeLayer(drawnItems)
-
-      var request = new XMLHttpRequest();
-      request.open('DELETE', '/delete', true);
-      request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-      request.send(data);
-      alert('Marker was deleted')
-    } */
-
+  
   </script>
 </body>
 </html>
