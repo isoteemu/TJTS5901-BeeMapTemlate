@@ -56,8 +56,9 @@
      
     var newPopup = L.popup({});
      var list = '<ul>'
-     list += '<li>'+ {{ item|list|tojson }}  + '<button>EDIT</button>' + '<button>DELETE</button>' + '</li>'
-    newPopup.setContent(list)
+      list += '<li>'+ {{item.lat|tojson }}+ " lon: " + {{item.lon|tojson }} + '</li>' + '<br/>';
+
+     newPopup.setContent(list)
 
       
     {% endfor %}
@@ -119,7 +120,7 @@
         <input type= "email" id="email"></br>\
         <button onclick="savePopup()">Save</button></fieldset>\
         <a href="https://twitter.com/intent/tweet?url=www.beeings.org&text=I found a new beehive! Check out Beeings!" target="_blank" title="Share on Twitter" >\
-        <img src="https://logos-world.net/wp-content/uploads/2020/04/Twitter-Logo.png" class="twt" alt="Twitter" style="width:62px;height:42px;"\
+        <img src="http://3.bp.blogspot.com/-NxouMmz2bOY/T8_ac97cesI/AAAAAAAAGg0/e3vY1_bdnbE/s1600/Twitter+logo+2012.png" class="twt" alt="Twitter" style="width:62px;height:42px;"\
         </a>\
         <a href="mailto:?subject=[Subject]&body=:[body]" target="_blank" title="Email">\
          <img src="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-email-512.png" class="twt" alt="Twitter" style="width:62px;height:62px;"\

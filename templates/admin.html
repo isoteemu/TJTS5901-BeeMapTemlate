@@ -39,7 +39,7 @@
       document.getElementById("hiveContainer").innerHTML = listItems;
     }
 
-   /* // Functin to delete a beehive in the map
+   /* // Function to delete a beehive in the map
      function deleteMarker() {
       var data = 
       var request = new XMLHttpRequest();
@@ -52,6 +52,7 @@
     </script>
     <a href="#" onclick="signOut();">Sign out</a>
 <script>
+//Function for signing out from Google account
   function signOut() {
     var auth2 = gapi.auth2.getAuthInstance();
     auth2.signOut().then(function () {
@@ -63,29 +64,5 @@
   <h1>Admin page</h1>
   </div>
   <div id="hiveContainer"></div>
-  <script>
-   
-
-    function updatePopup() {
-      //Data that we want to send to server and save as a beehive location
-      let firstname = document.getElementById("firstname").value;
-      let familyname = document.getElementById("familyname").value;
-      let email = document.getElementById("email").value;
-      var data = {
-        "firstname": firstname,
-        "familyname": familyname,
-        "email": email,
-        "latitude": latitude,
-        "longitude": longitude
-      };
-      
-      //HTTP request to server
-      var request = new XMLHttpRequest();
-      request.open('POST', '/save', true);
-      request.setRequestHeader('Content-Type', 'application/*+json; ');
-      request.send(JSON.stringify(data));
-    }
-  
-  </script>
 </body>
 </html>
