@@ -36,7 +36,7 @@
     var latitude = 1;
     var longitude = 1;
     // initialize Leaflet
-    var map = L.map('map').setView({ lon: 25.72088, lat: 62.24147 }, 15.5);
+    var map = L.map('map').setView({ lon: 25.72088, lat: 62.24147 }, 6.5);
     map.doubleClickZoom.disable(); 
 
     // add the OpenStreetMap tiles
@@ -55,8 +55,8 @@
        .addTo(map);
      
     var newPopup = L.popup({});
-     var list = '<ul>'
-      list += '<li>'+ {{item.lat|tojson }}+ " lon: " + {{item.lon|tojson }} + '</li>' + '<br/>';
+    //does not show the actual lat and lon of the marker
+      var list = '<li>'+ {{item.lat|tojson }}+ " lon: " + {{item.lon|tojson }} + '</li>' + '<br/>';
 
      newPopup.setContent(list)
 
