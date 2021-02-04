@@ -1,7 +1,11 @@
+{#
+  From jinja2 documentation: "A _() function is added as an alias to the gettext function."
+  https://jinja.palletsprojects.com/en/2.11.x/extensions/#i18n-extension
+#}
 <!DOCTYPE HTML>
 <html>
-
 <head>
+  <title>{{_("Best Bee Friends Mapping Application")}}</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
     integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
     crossorigin="" />
@@ -42,7 +46,7 @@
     // add the OpenStreetMap tiles
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
-      attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+      attribution: '&copy; <a href="https://openstreetmap.org/copyright">{{ _("OpenStreetMap contributors") }}</a>'
     }).addTo(map);
 
     // show the scale bar on the lower left corner

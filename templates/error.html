@@ -1,0 +1,100 @@
+{# Height for fonts #}
+{% set height = "2.0em" %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ _("Secret level select") }}</title>
+</head>
+<style>
+body,
+body.bg-light {
+    background: #1b1475 !important;
+    color: #a8bdff;
+    text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3);
+}
+a {
+    color:  #a8bdff;
+    text-decoration:none;
+}
+
+a:hover,
+a:focus {
+    animation: vilku 1.2s infinite;
+}
+
+.error p a {
+    display: block;
+}
+
+#level-select {
+    margin-top: {{height}};
+    color: #fff;
+    font-size: {{height}};
+    font-weight: 400;
+    text-align: center;
+    text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.3);
+
+}
+#level-select span {
+    font-style: normal;
+    display: inline-block;
+    white-space:pre;
+}
+
+#level-select span.bounce-me {
+    animation: bounce 2.4s infinite ease-in-out;  
+}
+
+@keyframes vilku {
+    50% {
+        color: #c7d7a8;;
+    }
+}
+
+@keyframes bounce {
+  50% {
+    transform: translate(0px, -{{height}}) scale(1.1);
+    text-shadow: 0px {{height}} 15px rgba(0, 0, 0, 0.4);
+  }
+}
+</style>
+<body>
+
+<div class="error container">
+    <h3 id="level-select">{{ _("Application error") }}</h3>
+    <p>{{ _("You have found the secret level select screen") }}</p>
+    <p>{{ error|e }}</p>
+    <p>
+        {#
+            Iterate routes. Propably not a good idea in production
+        #}
+        <a href="{{ request.base_url }}">Reload page</a>
+        {% for path in routes %}
+            <a href="{{ path|e }}" rel="nofollow">{{path|e}}</a>
+        {% endfor %}
+        </p>
+</div>
+
+<!-- Originally from https://codepen.io/SteveJRobertson/pen/xwxeGO -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+<script type="text/javascript">
+(function() {
+    $p = $("#level-select");
+    // Wrap every character around <span />
+    $p.html($p.text().split("").map(x => "<span>"+x+"</span>").join(""));
+
+    i = 0;
+    $p.children().each(function(e) {
+        var char = this;
+        // Delay adding classes on character basis to get different effect start time.
+        setTimeout(function() {
+            $(char).addClass("bounce-me");
+        }, 150 * i++);
+    });
+})();
+
+{% if not config['DEBUG'] %}
+    {# Redirect back #}
+    //window.history.back();
+{% endif %}
+</script>
