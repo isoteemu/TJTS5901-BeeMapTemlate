@@ -56,7 +56,7 @@
      
     var newPopup = L.popup({});
     //does not show the actual lat and lon of the marker
-      var list = '<li>'+ {{item.lat|tojson }}+ " lon: " + {{item.lon|tojson }} + '</li>' + '<br/>';
+      var list = '<div>'+ "lat: " + {{item.lat|tojson }}+ " lon: " + {{item.lon|tojson }} + '</div>';
 
      newPopup.setContent(list)
 
