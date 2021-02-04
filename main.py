@@ -108,8 +108,8 @@ def save_to_db():
     task_key = datastore_client.key(kind)
     task = datastore.Entity(key=task_key)
     task["LatLng"] = {
-                        "latitude": data["latitude"],
-                         "longitude": data["longitude"]}
+        "latitude": data["latitude"],
+        "longitude": data["longitude"]}
     task["Firstname"] = data['firstname']
     task["Familyname"] = data['familyname']
     task["email"] = data['email']
@@ -118,9 +118,24 @@ def save_to_db():
     return home()
 
 
+@app.route("/admin", methods=["GET", "POST", "DELETE"])
+def get_admin_page():
+  locations = []
+  for item in datastore_client.query(kind="Hive").fetch():
+        locations.append(
+            {"familyname": item['Familyname'],
+            "firstname": item['Firstname'],
+            "Email": item['email'],
+            "lat": item["LatLng"]['latitude'],
+            "lon": item["LatLng"]['longitude']}
+        )
+  print(locations)
+  return render_template("admin.html", hive_locations=locations)
+
+
 @app.route("/delete", methods=["DELETE"])
 def delete_from_db():
-    pass
+    print("delete toimii!")
 
 
 @app.route("/update", methods=["GET"])

@@ -144,3 +144,6 @@ instance_config.py
 *.json
 
 translations/*/*.mo
+
+node_modules
+node_modules/
