@@ -1,0 +1,9 @@
+The primary directive is to find security issues, and secondary to identify general flaws. For former, you can refer to owasp.
+
+Try avoiding writing duplicate issues, but extend existing ones with your comments if suitable. When filing a new issue, try following set up guidelines by another team. In general, your issue should explain; a) What you we’re trying to accomplish; b) What you expected to happen; c) What did actually happen. Issue stating ”It sucks balls!” is not exactly helpful, unless its literally about smell. And even then you should define what “it” is. Be descriptive but precise. Try – if you can’t – to be helpful. Different teams have different experiences, so feel free to provide suggestions if suitable and feasible. But within a limit. If you think CamelCase is superior to snake_case, keep it to yourself.
+
+Don’t spend hours writing one issue. Bad bug reports are a bane of every project, and it’s up to the developing team to ask for more comments if deemed necessary. It’s also not the responsibility of the reporter to understand why something occurs, just observing it is enough basis for an issue.
+
+Other teams will be reviewing your codebase, so please make sure you have necessary guides setup. If your team repository is private, change it to public. Make sure deployment url is discoverable. Nothing is as easy as giving criticism, but receiving it is a tad harder. Be polite, even if you get issues that are not – for one reason or another – issues. If the issue is unclear, ask them to elaborate. But remember that they might not be able to. Close issues if suitable. Create meta-issues if multiple issues are related. Try assigning bugs between team members. Some issues might need multiple team member efforts. Triage issues – not everything needs to be fixed immediately.
+
+And remember; Reading code is twice as hard as writing it.
