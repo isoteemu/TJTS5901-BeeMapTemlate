@@ -6,6 +6,9 @@ from flask import Markup
 from flask import render_template
 from flask import request
 from flask import Response
+from flask import redirect
+from flask import session
+from flask import url_for
 from flask_babel import Babel
 from google.cloud import datastore
 from opencensus.ext.azure import metrics_exporter
@@ -35,7 +38,7 @@ app.config.from_pyfile("instance_config.py", silent=True)
 datastore_client = datastore.Client()
 
 # Enable localization
-Babel(app)
+babel = Babel(app)
 
 # Metrics
 stats = stats_module.stats
@@ -96,6 +99,18 @@ def home():
             span.status = Status(5, "Zero locations found.")
 
     return render_template("mymap.html", hive_locations=locations)
+
+@app.route("/lang/<name>")
+def change(name):
+    """
+    Change the language of the app
+
+    params:
+        name: short version of language, in this instance finnish or english
+    """
+    if name in ["fi", "en"]:
+        session["lang"] = name
+    return redirect("/")
 
 
 @app.route("/save", methods=["GET","POST"])

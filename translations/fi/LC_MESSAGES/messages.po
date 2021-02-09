@@ -6,8 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-01-29 15:34+0200\n"
+"Report-Msgid-Bugs-To: EMAIL@ADD"POT-Cre"POT-Creation-Date: 2021-01-29 15:34+0200\n"
 "PO-Revision-Date: 2021-01-28 20:04+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fi\n"
@@ -34,6 +33,10 @@ msgstr "Löysit salaisen tason valinnan"
 msgid "Best Bee Friends Mapping Application"
 msgstr "Best Bee Friends Pesänkerjuu sovellus"
 
+#: templates/mymap.html:45
+msgid "Beeings map template"
+msgstr "Beeings kartta alusta"
+
 #: templates/mymap.html:48
 msgid "OpenStreetMap contributors"
 msgstr "OpenStreetMapin tekijät"
@@ -54,6 +57,17 @@ msgstr "Sähköpostiosoitteesi"
 msgid "Save"
 msgstr "Tallenna"
 
+#: templates/mymap.html:145
+msgid "Share on Twitter"
+msgstr "Jaa Twitterissä"
+
+#: templates/mymap.html:147
+msgid "Email"
+msgstr "Sähköposti"
+
 #: tests/test_app.py:14
+msgid "Hello World"
+msgstr "Hei Maailma"
+_app.py:14
 msgid "Hello World"
 msgstr "Hei Maailma"
