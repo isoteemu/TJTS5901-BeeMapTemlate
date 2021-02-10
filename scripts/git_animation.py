@@ -173,13 +173,13 @@ if __name__ == "__main__":
     for fork in forks:
         fork_path = target / str(fork)
         video_path = target / "%d.mkv" % fork
-        # git_clone_project(fork, fork_path)
-        # fetch_repo_avatars(fork_path, avatars_path)
+        git_clone_project(fork, fork_path)
+        fetch_repo_avatars(fork_path, avatars_path)
 
-        # project = gl.projects.get(fork)
-        # title = project.name
+        project = gl.projects.get(fork)
+        title = project.name
 
-        # generate_animation(fork_path, video_path, avatars_path, gource_params=["--title", shlex.quote(title), "--start-date", "2021-01-12"])
+        generate_animation(fork_path, video_path, avatars_path, gource_params=["--title", shlex.quote(title), "--start-date", "2021-01-12"])
         videos.append(video_path)
 
     compiled_video = target / "compiled.webm"
