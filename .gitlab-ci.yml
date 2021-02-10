@@ -3,6 +3,7 @@ image: docker:19.03.10
 # Static Application Security Tests by Gitlab CI
 include:
   - template: Security/SAST.gitlab-ci.yml
+  - template: Security/Secret-Detection.gitlab-ci.yml
 
 variables:
   # Our staging website address. Could - and maybe should - be defined in gitlab variables.
@@ -49,9 +50,7 @@ stages:
   - deploy
 
 before_script:
-  - export PYTHONPATH=.
-  - pip3 install -r requirements.txt
-  - pybabel compile -d translations
+
 
 python-tests:
   stage: test
@@ -62,8 +61,12 @@ python-tests:
     paths:
       - ${PRE_COMMIT_HOME}
   script:
+    - export PYTHONPATH=.
     - export FLASK_APP=main
+    - python3 -m pip install --upgrade pip
     - pip3 install pytest pytest-cov pre-commit
+    - pip3 install -r requirements.txt
+    - pybabel compile -d translations
     - pytest --verbose tests --cov --cov-report term --cov-report html -m "not staging"
     #- pre-commit install
     #- pre-commit run --all-files
@@ -127,6 +130,7 @@ test-stating:
   stage: test-staging
   image: python:3
   script:
+    - pip3 install -r requirements.txt
     - pip3 install pytest
     # Run tests that has been marked by "@pytest.mark.staging"
     - pytest --verbose tests -m "staging"
@@ -139,8 +143,11 @@ staging:
   stage: staging
   environment:
     name: staging
-  image: google/cloud-sdk:alpine
+  image: google/cloud-sdk
   script:
+  - pip3 install flask-babel --prefer-binary
+  - pybabel compile -d translations
+   
   - gcloud auth activate-service-account --key-file $GOOGLE_APPLICATION_CREDENTIALS
   - cp $GOOGLE_APPLICATION_CREDENTIALS appcredentials.json
   # Copy config file
@@ -154,12 +161,15 @@ deploy:
   stage: deploy
   environment:
     name: production
-  image: google/cloud-sdk:alpine
+  image: google/cloud-sdk
   script:
+  - pip3 install flask-babel --prefer-binary
+  - pybabel compile -d translations
+
   - gcloud auth activate-service-account --key-file $GOOGLE_APPLICATION_CREDENTIALS
   - cp $GOOGLE_APPLICATION_CREDENTIALS appcredentials.json
   # Copy config file
-  - mv $INSTANCE_CONFIG_PRODUCTION instance_config.py
+  - cp $INSTANCE_CONFIG_PRODUCTION instance_config.py
   - gcloud --quiet --project $PROJECT_ID app deploy app.yaml
 
   only:

@@ -27,20 +27,40 @@
     #map {
       /* configure the size of the map */
       width: 100%;
-      height: 100%;
+      height: 95%;
     }
+     #lang a {
+        padding: 0.25em;
+        border: 1px solid black;
+        border-radius: 6px;
+        font-size: 120%;
+    }
+
   </style>
 </head>
 
 <body>
+  <header>
+    <div>
+      <h1>{{_("Beeings map template")}}</h1>
+    </div>
+    <div id="lang">
+      <a href="/lang/fi">FI</a>
+      <a href="/lang/en">EN</a>
+  </div>
+  </header>
+  
   <div id="map"></div>
+  
+
   <script>
 
     //init global vars
     var latitude = 1;
     var longitude = 1;
     // initialize Leaflet
-    var map = L.map('map').setView({ lon: 25.72088, lat: 62.24147 }, 15.5);
+    var map = L.map('map').setView({ lon: 25.72088, lat: 62.24147 }, 6.5);
+    map.doubleClickZoom.disable(); 
 
     // add the OpenStreetMap tiles
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -53,7 +73,17 @@
 
     // show a marker on the map
     {% for item in hive_locations %}
-      L.marker({{item | tojson}}).bindPopup('spam').addTo(map);
+      L.marker({{item | tojson}})
+       .bindPopup(newPopup)
+       .addTo(map);
+     
+    var newPopup = L.popup({});
+    //does not show the actual lat and lon of the marker
+      var list = '<div>'+ "{{ _('lat: ') }}" + {{item.lat|tojson }}+ '<br/>' +"{{ _('lon: ') }}" + {{item.lon|tojson }} + '</div>';
+
+     newPopup.setContent(list)
+
+      
     {% endfor %}
     
     //Array of all the markers that we create
@@ -100,18 +130,25 @@
       //Set popup content
       markerpopup.setContent('<form class="popup">\
         <fieldset >\
-        <label for="firstname"> {{ _("Your Firstname") }}: \
+        <label for="firstname">{{ _('Your Firstname')}} \
         </label>\
         <input type="text" id="firstname" ></br>\
         \
-        <label> {{ _("Your Familyname") }}: \
+        <label> {{ _('Your Familyname') }} \
         </label>\
         <input type="text" id="familyname" ></br>\
         \
-        <label for "email"> {{ _("Your email") }} \
+        <label for "email"> {{ _('Your email') }} \
         </label>\
         <input type= "email" id="email"></br>\
-        <button onclick="savePopup()">{{ _("Save") }}</button></fieldset></form>');
+        <button onclick="savePopup()">{{_("Save")}}</button></fieldset>\
+        <a href="https://twitter.com/intent/tweet?url=www.beeings.org&text=I found a new beehive! Check out Beeings!" target="_blank" title={{ _('Share on Twitter')}} >\
+        <img src="http://3.bp.blogspot.com/-NxouMmz2bOY/T8_ac97cesI/AAAAAAAAGg0/e3vY1_bdnbE/s1600/Twitter+logo+2012.png" class="twt" alt="Twitter" style="width:62px;height:42px;"\
+        </a>\
+        <a href="mailto:?subject=[Subject]&body=:[body]" target="_blank" title={{ _('Email')}}>\
+         <img src="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-email-512.png" class="twt" alt="Email" style="width:62px;height:62px;"\
+        </a>\
+                </form>');
       //Bind marker popup
       marker.bindPopup(markerpopup);
       //Add marker to geojson layer
@@ -128,7 +165,7 @@
       request.open('DELETE', '/delete', true);
       request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
       request.send(data);
-      alert('Marker was saved to database!')
+      alert('Marker was deleted')
     } */
 
   </script>
