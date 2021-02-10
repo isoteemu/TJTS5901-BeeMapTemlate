@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-02-10 13:38+0200\n"
+"POT-Creation-Date: 2021-02-10 14:42+0200\n"
 "PO-Revision-Date: 2021-01-28 20:04+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fi\n"
@@ -43,19 +43,23 @@ msgstr "Best Bee Friends Pesänkerjuu sovellus"
 msgid "OpenStreetMap contributors"
 msgstr "OpenStreetMapin tekijät"
 
-#: templates/mymap.html:103
+#: templates/mymap.html:93
+msgid "Could not save beehive!"
+msgstr "Pesän tallennus epäonnistui!"
+
+#: templates/mymap.html:124
 msgid "Your Firstname"
 msgstr "Etunimesi"
 
-#: templates/mymap.html:107
+#: templates/mymap.html:128
 msgid "Your Familyname"
 msgstr "Sukunimesi"
 
-#: templates/mymap.html:111
+#: templates/mymap.html:132
 msgid "Your email"
 msgstr "Sähköpostiosoitteesi"
 
-#: templates/mymap.html:114
+#: templates/mymap.html:135
 msgid "Save"
 msgstr "Tallenna"
 
