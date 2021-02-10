@@ -72,12 +72,33 @@
         "latitude": latitude,
         "longitude": longitude
       };
-      
+
+      // Disable submit button temporarily
+      document.getElementById("save_btn").disabled = true;
+
       //HTTP request to server
       var request = new XMLHttpRequest();
       request.open('POST', '/save', true);
       request.setRequestHeader('Content-Type', 'application/*+json; ');
+
+      // Setup callback, which will be executed when we get confirmation
+      request.onload = function() {
+
+        document.getElementById("save_btn").disabled = false;
+
+        if(this.status == 200) {
+          // Saved presumably, reload page.
+          window.location.reload();
+        } else {
+          alert({{_("Could not save beehive!") | tojson }});
+        }
+      }
+
+      // Send data.
       request.send(JSON.stringify(data));
+
+      // Stop event bubbling, IE prevent form from being sent.
+      return false;
     }
     //Create GeoJSON layer for user generated data
     var drawnItems = new L.geoJson();
@@ -98,7 +119,7 @@
       latitude = lat;
       longitude = lng;
       //Set popup content
-      markerpopup.setContent('<form class="popup">\
+      markerpopup.setContent('<form class="popup" onsubmit="return savePopup();">\
         <fieldset >\
         <label for="firstname"> {{ _("Your Firstname") }}: \
         </label>\
@@ -111,12 +132,11 @@
         <label for "email"> {{ _("Your email") }} \
         </label>\
         <input type= "email" id="email"></br>\
-        <button onclick="savePopup()">{{ _("Save") }}</button></fieldset></form>');
+        <button id="save_btn">{{ _("Save") }}</button></fieldset></form>');
       //Bind marker popup
       marker.bindPopup(markerpopup);
       //Add marker to geojson layer
       drawnItems.addLayer(marker);
-
       allMarkers.push(marker)
     });
 
