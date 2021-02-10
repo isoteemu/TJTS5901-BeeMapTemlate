@@ -46,7 +46,6 @@ def home():
         kind = "Hive"
         locations = []
         for latlng in datastore_client.query(kind=kind).fetch():
-            print(latlng)
             locations.append({
                 'loc': {
                     "lat": latlng["LatLng"]['latitude'],
