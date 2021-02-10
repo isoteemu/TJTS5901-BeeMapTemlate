@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-01-29 15:34+0200\n"
+"POT-Creation-Date: 2021-02-10 13:38+0200\n"
 "PO-Revision-Date: 2021-01-28 20:04+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fi\n"
@@ -17,6 +17,11 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.8.0\n"
+
+#: main.py:55
+#, python-format
+msgid "Authored by %(Firstname)s %(Familyname)s"
+msgstr "Lisännyt %(Firstname)s %(Familyname)s"
 
 #: templates/error.html:6
 msgid "Secret level select"
@@ -54,6 +59,7 @@ msgstr "Sähköpostiosoitteesi"
 msgid "Save"
 msgstr "Tallenna"
 
-#: tests/test_app.py:14
+#: tests/test_app.py:13
 msgid "Hello World"
 msgstr "Hei Maailma"
+

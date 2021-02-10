@@ -6,7 +6,7 @@ from flask import Markup
 from flask import render_template
 from flask import request
 from flask import Response
-from flask_babel import Babel
+from flask_babel import Babel, gettext
 from google.cloud import datastore
 from opencensus.ext.azure.log_exporter import AzureLogHandler
 from opencensus.ext.azure.trace_exporter import AzureExporter
@@ -46,9 +46,14 @@ def home():
         kind = "Hive"
         locations = []
         for latlng in datastore_client.query(kind=kind).fetch():
-            locations.append(
-                {"lat": latlng["LatLng"]['latitude'], "lon": latlng["LatLng"]['longitude']}
-            )
+            print(latlng)
+            locations.append({
+                'loc': {
+                    "lat": latlng["LatLng"]['latitude'],
+                    "lon": latlng["LatLng"]['longitude'],
+                },
+                "description": gettext("Authored by %(Firstname)s %(Familyname)s", Firstname=latlng['Firstname'], Familyname=latlng['Familyname'])
+            })
 
         location_count = len(locations)
         logger.debug("Found %d HiveLocation entries for map." % location_count)
