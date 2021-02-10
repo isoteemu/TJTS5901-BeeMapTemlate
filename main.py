@@ -6,6 +6,7 @@ from flask import Markup
 from flask import render_template
 from flask import request
 from flask import Response
+from flask import jsonify
 from flask_babel import Babel, gettext
 from google.cloud import datastore
 from opencensus.ext.azure.log_exporter import AzureLogHandler
@@ -73,11 +74,11 @@ def home():
     return render_template("mymap.html", hive_locations=locations)
 
 
-@app.route("/save", methods=["GET","POST"])
+@app.route("/save", methods=["POST"])
 def save_to_db():
 
     data = request.get_json()
-    print("saved", data,"!")
+    print("saved", data, "!")
     kind = "Hive"
     #name = data['firstname']
     task_key = datastore_client.key(kind)
@@ -90,7 +91,7 @@ def save_to_db():
     task["email"] = data['email']
 
     datastore_client.put(task)
-    return home()
+    return jsonify({"status": "OK"})
 
 
 @app.route("/delete", methods=["DELETE"])
