@@ -53,9 +53,9 @@
 
     // show a marker on the map
     {% for item in hive_locations %}
-      L.marker({{item | tojson}}).bindPopup('spam').addTo(map);
+      L.marker({{item['loc'] | tojson}}).bindPopup({{item['description'] | e | tojson}}).addTo(map);
     {% endfor %}
-    
+
     //Array of all the markers that we create
     var allMarkers = [];
 
