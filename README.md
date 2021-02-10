@@ -49,3 +49,7 @@ Translate generated file `translations/fi/LC_MESSAGES/messages.po` using tooling
 Compile translations into gettex format:
 
 `pybabel compile -d translations`
+
+## Submitting bugs
+
+Report bugs using [bug template](https://gitlab.jyu.fi/startuplab/courses/tjts5901-continuous-software-engineering/beemaptemplate/-/issues/new?issuable_template=Bug)
