@@ -37,8 +37,18 @@ app.config.from_pyfile("instance_config.py", silent=True)
 
 datastore_client = datastore.Client()
 
-# Enable localization
+
 babel = Babel(app)
+def get_locale():
+        #Decide the language to use
+        if "lang" in session:
+            return session["lang"]
+        #Decides the most suitable language option
+        lang = request.accept_languages.best_match(["fi", "en"])
+        return lang
+
+babel.localeselector(get_locale)
+
 
 # Metrics
 stats = stats_module.stats
@@ -102,15 +112,10 @@ def home():
 
 @app.route("/lang/<name>")
 def change(name):
-    """
-    Change the language of the app
-
-    params:
-        name: short version of language, in this instance finnish or english
-    """
+    #This changes the language of the app
     if name in ["fi", "en"]:
         session["lang"] = name
-    return redirect("/")
+    return redirect(url_for("home"))
 
 
 @app.route("/save", methods=["GET","POST"])

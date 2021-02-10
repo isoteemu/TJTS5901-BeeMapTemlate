@@ -41,6 +41,15 @@ msgstr "Beeings kartta alusta"
 msgid "OpenStreetMap contributors"
 msgstr "OpenStreetMapin tekijät"
 
+
+#: templates/mymap.html:82
+msgid "lat: "
+msgstr "leveyspiiri: "
+
+#: templates/mymap.html:82
+msgid "lon: "
+msgstr "pituuspiiri: "
+
 #: templates/mymap.html:103
 msgid "Your Firstname"
 msgstr "Etunimesi"
@@ -64,6 +73,7 @@ msgstr "Jaa Twitterissä"
 #: templates/mymap.html:147
 msgid "Email"
 msgstr "Sähköposti"
+
 
 #: tests/test_app.py:14
 msgid "Hello World"
