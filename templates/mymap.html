@@ -21,13 +21,18 @@
     }
     .popup {
       color: blue;
-      height: 200px;
-      width: 200px;
     }
     #map {
       /* configure the size of the map */
       width: 100%;
       height: 100%;
+    }
+    input:invalid {
+    border: 2px dashed black;
+    }
+
+    input:valid {
+    border: 1px solid black;
     }
   </style>
 </head>
@@ -40,7 +45,7 @@
     var latitude = 1;
     var longitude = 1;
     // initialize Leaflet
-    var map = L.map('map').setView({ lon: 25.72088, lat: 62.24147 }, 15.5);
+    var map = L.map('map').setView({ lon: 25.72088, lat: 62.24147 }, 5);
 
     // add the OpenStreetMap tiles
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -58,47 +63,59 @@
 
     //Array of all the markers that we create
     var allMarkers = [];
-
+    
     // Function saves beehive's location to database and to local map
-    function savePopup() {
-      //Data that we want to send to server and save as a beehive location
-      let firstname = document.getElementById("firstname").value;
-      let familyname = document.getElementById("familyname").value;
-      let email = document.getElementById("email").value;
-      var data = {
-        "firstname": firstname,
-        "familyname": familyname,
-        "email": email,
-        "latitude": latitude,
-        "longitude": longitude
-      };
+    function savePopup(){
+      const firstname_form = document.getElementById("firstname");
+      const familyname_form = document.getElementById("familyname");
+      const email_form = document.getElementById("email");
 
-      // Disable submit button temporarily
-      document.getElementById("save_btn").disabled = true;
+      // if validation doest pass, dont let it post data
+      isValidFirstname = firstname_form.checkValidity();
+      isValidFamilyname = familyname_form.checkValidity();
+      isValidEmail = email_form.checkValidity();
 
-      //HTTP request to server
-      var request = new XMLHttpRequest();
-      request.open('POST', '/save', true);
-      request.setRequestHeader('Content-Type', 'application/*+json; ');
+      if (isValidEmail && isValidFirstname && isValidFamilyname) {
+        //Data that we want to send to server and save as a beehive location
+        let firstname = document.getElementById("firstname").value;
+        let familyname = document.getElementById("familyname").value;
+        let email = document.getElementById("email").value;
+        
+        var data = {
+          "firstname": firstname,
+          "familyname": familyname,
+          "email": email,
+          "latitude": latitude,
+          "longitude": longitude
+        };
 
-      // Setup callback, which will be executed when we get confirmation
-      request.onload = function() {
+        // Disable submit button temporarily
+        document.getElementById("save_btn").disabled = true;
 
-        document.getElementById("save_btn").disabled = false;
+        //HTTP request to server
+        var request = new XMLHttpRequest();
+        request.open('POST', '/save', true);
+        request.setRequestHeader('Content-Type', 'application/*+json; ');
 
-        if(this.status == 200) {
-          // Saved presumably, reload page.
-          window.location.reload();
-        } else {
-          alert({{_("Could not save beehive!") | tojson }});
+        // Setup callback, which will be executed when we get confirmation
+        request.onload = function() {
+
+          document.getElementById("save_btn").disabled = false;
+
+          if(this.status == 200) {
+            // Saved presumably, reload page.
+            window.location.reload();
+          } else {
+            alert({{_("Could not save beehive!") | tojson }});
+          }
         }
+
+        // Send data.
+        request.send(JSON.stringify(data));
+
+        // Stop event bubbling, IE prevent form from being sent.
+        return false;
       }
-
-      // Send data.
-      request.send(JSON.stringify(data));
-
-      // Stop event bubbling, IE prevent form from being sent.
-      return false;
     }
     //Create GeoJSON layer for user generated data
     var drawnItems = new L.geoJson();
@@ -107,8 +124,8 @@
 
     // Leaflet draw eventS
     map.on('dblclick', function (e) {
-      var marker = L.marker(e.latlng).addTo(map);
-      var markerpopup = L.popup({});
+      var marker = L.marker(e.latlng, {}).addTo(map);
+      var markerpopup = L.popup({closeButton: true, keepInView: true, maxWidth: 200});
       //Set popup lat lng where clicked
       markerpopup.setLatLng(e.latlng);
       //lat lng where clicked to string
@@ -123,21 +140,22 @@
         <fieldset >\
         <label for="firstname"> {{ _("Your Firstname") }}: \
         </label>\
-        <input type="text" id="firstname" ></br>\
-        \
+        <input type="text" id="firstname" maxlength="20" required>\
+        <h5>Firstname is required</h5>\
         <label> {{ _("Your Familyname") }}: \
         </label>\
-        <input type="text" id="familyname" ></br>\
+        <input type="text" id="familyname" maxlength="50" ></br></br>\
         \
         <label for "email"> {{ _("Your email") }} \
         </label>\
-        <input type= "email" id="email"></br>\
+        <input type= "email" id="email" required>\
+        <h5>Email is required</h5>\
         <button id="save_btn">{{ _("Save") }}</button></fieldset></form>');
       //Bind marker popup
       marker.bindPopup(markerpopup);
       //Add marker to geojson layer
       drawnItems.addLayer(marker);
-      allMarkers.push(marker)
+      allMarkers.push(marker);
     });
 
     // Functin to delete a beehive in the map
