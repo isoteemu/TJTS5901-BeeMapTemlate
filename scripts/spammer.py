@@ -14,6 +14,15 @@ import re
 
 """
     Spam naughty stuff on map.
+
+    Uses har files to describe how data is handled. Generating that file takes
+    some covert ops, namely filling page with data describet in `NONNAUGHTY_WORDS`.
+    https://toolbox.googleapps.com/apps/har_analyzer/
+
+    Agora coordinates are replaced with ones from NAUGHTY_COORDS.
+
+    TODO: Handle missing HAR files
+    TODO: Handle non-latin1 characters.
 """
 
 LDNOOBW_DIR = path = Path(__file__).parent.absolute() / "ldnoobw"
