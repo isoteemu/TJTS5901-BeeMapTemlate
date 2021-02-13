@@ -84,9 +84,13 @@ def mikkelitit(points):
     # Reposition <- scale <- flip svg to mercorator
     # TODO: Fix projection
     locations = [
-        (x + offset[0], y + offset[1])
+        (x + offset[0], y + offset[1])  # Set offset
         for (x, y) in (
-            (x * 0.1, y * 0.1) for (x, y) in ((x, -1 * y) for (x, y) in points)
+            (x * 0.1, y * 0.1)  # Scale
+            for (x, y) in (
+                (x, -1 * y)  # Flip SVG coordinates vertically
+                for (x, y) in points
+            )
         )
     ]
     return locations
@@ -141,6 +145,7 @@ def team_deployments(csv_path):
 
 
 def find_har_file(url, folder=HARS_DIR):
+    """ Find `.har` file matching url from :param:`folder` directory """
     domain = urlparse(url).netloc.lower()
     return next(Path(folder).glob(f"{domain}_*.har"))
 
@@ -166,16 +171,17 @@ def prepare_replay_data(harfile):
 
 
 def acate(deployment, dry_run=True):
-    """ Send bunch of coordinates to deployment """
+    """ Send bunch of coordinates to deployment. """
     headers = {}
     cookies = {}
 
+    # Find har file to use as basis for data replay.
     har_file = find_har_file(deployment)
     req = prepare_replay_data(har_file)
 
     print("Defacating %s" % deployment)
 
-    # Imitate (some) headers.
+    # Copy (some) headers.
     for _header in req['headers']:
         print("HEADER:\t", _header)
         if _header['name'] in ['Referer', 'User-Agent', 'Content-Type']:
@@ -213,5 +219,5 @@ if __name__ == "__main__":
     deployments = team_deployments(os.getenv('TEAMS_REPOSITORIES_CSV'))
 
     for deployment in deployments:
-        # Handle missing HAR resources.
+        # TODO: Handle missing HAR resources.
         acate(deployment)
