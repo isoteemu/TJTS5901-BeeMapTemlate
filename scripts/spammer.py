@@ -188,7 +188,7 @@ def acate(deployment, dry_run=True):
     for (x, y) in mikkelitit(NAUGHTY_COORDS):
         # Replace agora coordinates
         x, y = (str(x), str(y))
-        point_post_data = re.sub(r'(?![^\d])(25\.\d*)', str(x), re.sub(r'(?![^\d])(62\.\d*)', str(y), post_data))
+        point_post_data = re.sub(r'(?![^\d])(25\.\d*)', x, re.sub(r'(?![^\d])(62\.\d*)', y, post_data))
 
         if dry_run:
             r = "<TEST>"
@@ -204,7 +204,6 @@ def acate(deployment, dry_run=True):
 
         # Print debug info
         print((x, y), point_post_data, r)
-
 
 
 if __name__ == "__main__":
