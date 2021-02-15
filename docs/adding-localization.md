@@ -8,6 +8,7 @@ You can find translations being implemented on propaedeutic video at 1:15:00 mar
 - Use translation functions in templates (145c3681) and in code.
 - Extract strings from templates and from code using pybabel: `$ pybabel extract -F babel.cfg -o messages.pot .`
 - Generate locale specific translations using pybabel `$ pybabel init -i messages.pot -d translations -l fi`
+  **OR** if you have already done initial, update existing translations with new strings from `.pot` -file: `$ pybabel update -i messages.pot -d translations`
 - Translate generated file `translations/fi/LC_MESSAGES.po`
 - Compile translations into gettex compatible format `$ pybabel compile -d translations`
 - Add tests. Reference test can be found at `tests/test_app.py` which is implemented at e5224849
