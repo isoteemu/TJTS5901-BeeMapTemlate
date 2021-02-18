@@ -17,10 +17,9 @@ import random
 
 import requests
 import requests_cache
-requests_cache.install_cache('demo_cache')
+requests_cache.install_cache()
 
 
-# I've uploaded secrets. Don't worry, its revoked.
 gl = gitlab.Gitlab('https://gitlab.jyu.fi', private_token=os.getenv("GITLAB_TOKEN"))
 
 # Some forks that are not interesting
@@ -72,7 +71,7 @@ def fetch_repo_avatars(repo_path, target_path):
     authors = git_authors(repo_path)
 
     for email, author in authors:
-        # Lock file is to prevent prevent similar requests being spammed when avatar is missing.
+        # Lock file is to prevent similar requests being spammed when avatar is missing.
         target_lock = target_path / (Path(author + ".lock")).name
         target = target_path / (Path(author + ".png")).name
 
