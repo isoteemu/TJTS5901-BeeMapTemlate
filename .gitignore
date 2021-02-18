@@ -144,3 +144,4 @@ instance_config.py
 *.json
 
 translations/*/*.mo
+scripts/hars/*
